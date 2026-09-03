@@ -2,7 +2,7 @@
 
 Командный репозиторий триггерной модели для трансграничных переводов.
 
-Сейчас в репозитории опубликован первый изолированный слой: загрузка официальных дневных курсов Банка России. Признаки, таргеты, индикаторы, ML и policy будут добавляться отдельными проверяемыми изменениями.
+В репозитории реализован воспроизводимый исследовательский pipeline: загрузка официальных дневных курсов Банка России, causal-признаки, разметка targets, walk-forward оптимизация rule-based индикаторов и независимый backtest фиксированных G0/W1-правил.
 
 Требуется Python 3.10 или новее.
 
@@ -26,7 +26,7 @@ jupyter lab
 .venv\Scripts\activate
 ```
 
-После запуска откройте `notebooks/01_cbr_data_loading.ipynb` и выполните все ячейки.
+После запуска откройте `notebooks/test.ipynb` и выполните все ячейки сверху вниз. Запускайте Jupyter из корня репозитория либо из каталога `notebooks`: ноутбук корректно определяет корень в обоих случаях.
 
 ## Что делает загрузчик
 
@@ -39,14 +39,33 @@ jupyter lab
 
 Исторический XML не содержит точного времени публикации. Поэтому `available_at` и `publication_timestamp` консервативно установлены на `00:00` следующего календарного дня, а поле `publication_timestamp_is_proxy=True` явно маркирует это допущение.
 
+## Что делает исследовательский pipeline
+
+- строит point-in-time календарную панель без использования будущих значений в признаках;
+- рассчитывает causal-индикаторы и future outcomes для разметки;
+- формирует семейства targets и оценивает их частоту и теоретический lift;
+- перебирает одиночные правила и пары правил с `AND`/`OR`;
+- подбирает параметры на train-части walk-forward и оценивает pooled OOS lift;
+- требует не менее двух сигналов в неделю;
+- фиксирует лучшие правила по discovery-периоду и отдельно тестирует G0/W1 на holdout с 2025 года.
+
 ## Структура
 
 ```text
-notebooks/01_cbr_data_loading.ipynb  # воспроизводимый пример загрузки
-src/cbr_loader.py                    # библиотечный код
-tests/test_cbr_loader.py             # тест XML-парсинга и нормализации
-data/raw/cbr/                        # локальный XML-кэш, не коммитится
-data/processed/                      # локальные CSV/Parquet, не коммитятся
+notebooks/test.ipynb             # основной воспроизводимый notebook
+src/cbr_loader.py                # загрузка и нормализация курсов ЦБ
+src/market_data.py               # point-in-time market panel
+src/features.py                  # causal-признаки
+src/outcomes.py                  # будущие outcomes для разметки
+src/targets.py                   # targets и их registry
+src/target_evaluation.py         # частота и теоретический lift targets
+src/indicators.py                # правила и комбинации AND/OR
+src/walk_forward.py              # временные WF-разбиения
+src/indicator_optimization.py    # train-оптимизация и pooled OOS-оценка
+src/indicator_backtest.py        # независимый backtest фиксированных правил
+tests/                           # автоматические проверки
+data/raw/cbr/                    # локальный XML-кэш, не коммитится
+data/processed/                  # локальные CSV/Parquet, не коммитятся
 ```
 
 ## Проверка
