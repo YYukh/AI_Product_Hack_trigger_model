@@ -1,4 +1,4 @@
-"""Расширяющиеся walk-forward разбиения без temporal leakage."""
+"""Walk-forward разбиения без temporal leakage."""
 
 from __future__ import annotations
 
@@ -27,13 +27,16 @@ def make_periodic_walk_forward_folds(
     horizon: int,
     first_test_date: str | pd.Timestamp,
     test_months: int = 12,
+    train_months: int | None = None,
     date_column: str = "available_at",
 ) -> list[WalkForwardFold]:
-    """Expanding walk-forward с test-периодом заданной длины в месяцах."""
+    """Walk-forward с test-периодом и опциональным rolling train-окном."""
     if horizon <= 0:
         raise ValueError("horizon должен быть положительным")
     if test_months <= 0:
         raise ValueError("test_months должен быть положительным")
+    if train_months is not None and train_months <= 0:
+        raise ValueError("train_months должен быть положительным")
     if date_column not in data.columns:
         raise KeyError(f"Нет столбца {date_column!r}")
 
@@ -52,6 +55,10 @@ def make_periodic_walk_forward_folds(
 
         test_mask = dates.ge(test_start) & dates.lt(test_end_exclusive)
         train_mask = dates + pd.Timedelta(days=horizon) < test_start
+        if train_months is not None:
+            train_mask &= dates.ge(
+                test_start - pd.DateOffset(months=train_months)
+            )
         train_index = data.index[train_mask].to_numpy()
         test_index = data.index[test_mask].to_numpy()
 
@@ -91,15 +98,18 @@ def make_walk_forward_folds(
     *,
     horizon: int,
     first_test_year: int = 2023,
+    train_months: int | None = None,
     date_column: str = "available_at",
 ) -> list[WalkForwardFold]:
-    """Создать expanding folds и purge по длине будущего outcome.
+    """Создать folds с purge и опциональным rolling train-окном.
 
     Строка train допустима, только если её label window полностью
     заканчивается до начала test: ``date + horizon < test_start``.
     """
     if horizon <= 0:
         raise ValueError("horizon должен быть положительным")
+    if train_months is not None and train_months <= 0:
+        raise ValueError("train_months должен быть положительным")
     if date_column not in data.columns:
         raise KeyError(f"Нет столбца {date_column!r}")
 
@@ -126,6 +136,10 @@ def make_walk_forward_folds(
             dates + pd.Timedelta(days=horizon)
             < nominal_test_start
         )
+        if train_months is not None:
+            train_mask &= dates.ge(
+                nominal_test_start - pd.DateOffset(months=train_months)
+            )
 
         train_index = data.index[train_mask].to_numpy()
         test_index = data.index[test_mask].to_numpy()
@@ -177,4 +191,3 @@ def folds_summary(folds: list[WalkForwardFold]) -> pd.DataFrame:
         }
         for fold in folds
     )
-

@@ -134,6 +134,36 @@ def _best_backtest_candidate_index(
     return int(eligible_indices[int(np.argmax(local_uplift))])
 
 
+def fit_indicator_space(
+    y_true: pd.Series,
+    predictions: np.ndarray,
+    candidates: list[IndicatorCandidate],
+    *,
+    dates: pd.Series,
+    min_signals_per_week: float,
+) -> tuple[int | None, dict, dict]:
+    """Fit one fixed indicator architecture using the research objective.
+
+    This is the public production-facing equivalent of the train operation
+    performed inside every research WF fold.
+    """
+    if not candidates:
+        raise ValueError("Пустое пространство candidates")
+    stats = _precision_counts(y_true, predictions)
+    calendar_weeks = _calendar_weeks(dates)
+    metrics = _backtest_metrics(stats, calendar_weeks=calendar_weeks)
+    indices = np.array(sorted(
+        range(len(candidates)), key=lambda index: candidates[index].name
+    ))
+    selected = _best_backtest_candidate_index(
+        stats,
+        indices,
+        calendar_weeks=calendar_weeks,
+        min_signals_per_week=min_signals_per_week,
+    )
+    return selected, stats, {**metrics, "calendar_weeks": calendar_weeks}
+
+
 def optimize_indicator_library(
     data: pd.DataFrame,
     *,
@@ -141,6 +171,8 @@ def optimize_indicator_library(
     indicator_spaces: dict[str, list[IndicatorCandidate]],
     first_test_date: str | pd.Timestamp,
     test_months_options: tuple[int, ...] | list[int],
+    train_months: int | None = None,
+    refit_date: str | pd.Timestamp | None = None,
     min_signals_per_week: float = 2.0,
     ensemble_lift_thresholds: tuple[float, ...] | list[float] = (1.30,),
 ) -> tuple[
@@ -175,6 +207,8 @@ def optimize_indicator_library(
         raise ValueError("test_months_options должны быть положительными")
     if min_signals_per_week < 0:
         raise ValueError("min_signals_per_week не может быть отрицательным")
+    if train_months is not None and train_months <= 0:
+        raise ValueError("train_months должен быть положительным")
     ensemble_thresholds = tuple(
         dict.fromkeys(float(x) for x in ensemble_lift_thresholds)
     )
@@ -198,6 +232,7 @@ def optimize_indicator_library(
     )
     # Главный кэш: все primitive/SINGLE/AND/OR predictions одной валюты.
     predictions = prediction_matrix(prepared, candidates)
+    prepared_dates = pd.to_datetime(prepared["available_at"])
 
     summary_rows: list[dict] = []
     fold_rows: list[dict] = []
@@ -214,7 +249,18 @@ def optimize_indicator_library(
         final_by_target: dict[str, tuple[dict, dict, dict[str, int | None]]] = {}
         for definition in definitions.itertuples(index=False):
             target = definition.name
-            labelled = prepared[target].notna().to_numpy()
+            # pandas может вернуть read-only view; дальше маска изменяется
+            # условиями maturity и rolling train window.
+            labelled = prepared[target].notna().to_numpy(dtype=bool, copy=True)
+            if refit_date is not None:
+                refit_at = pd.Timestamp(refit_date)
+                labelled &= prepared_dates.add(
+                    pd.Timedelta(days=int(horizon))
+                ).lt(refit_at).to_numpy()
+                if train_months is not None:
+                    labelled &= prepared_dates.ge(
+                        refit_at - pd.DateOffset(months=train_months)
+                    ).to_numpy()
             if not labelled.any():
                 raise ValueError(f"Нет доступных значений target: {target}")
             final_stats = _precision_counts(
@@ -249,6 +295,7 @@ def optimize_indicator_library(
                 horizon=int(horizon),
                 first_test_date=first_test_date,
                 test_months=test_months,
+                train_months=train_months,
             )
 
             for definition in definitions.itertuples(index=False):
@@ -327,6 +374,7 @@ def optimize_indicator_library(
                                 "horizon": int(horizon),
                                 "indicator": space_name,
                                 "test_months": test_months,
+                                "train_months": train_months,
                                 "train_start": fold.train_start,
                                 "train_end": fold.train_end,
                                 "test_start": fold.test_start,
@@ -385,6 +433,7 @@ def optimize_indicator_library(
                                 "horizon": int(horizon),
                                 "indicator": space_name,
                                 "test_months": test_months,
+                                "train_months": train_months,
                                 "train_start": fold.train_start,
                                 "train_end": fold.train_end,
                                 "test_start": fold.test_start,
@@ -461,6 +510,7 @@ def optimize_indicator_library(
                         "target": target,
                         "horizon": int(horizon),
                         "test_months": test_months,
+                        "train_months": train_months,
                         "folds": totals["folds"],
                         "frequency_eligible_folds": totals[
                             "frequency_eligible_folds"
@@ -694,6 +744,8 @@ def optimize_indicator(
     candidates: list[IndicatorCandidate],
     first_test_date: str | pd.Timestamp,
     test_months: int = 12,
+    train_months: int | None = None,
+    refit_date: str | pd.Timestamp | None = None,
     min_signals_per_week: float = 2.0,
 ) -> tuple[dict, pd.DataFrame, IndicatorCandidate]:
     """Упрощённый интерфейс для оптимизации одного пространства."""
@@ -703,8 +755,9 @@ def optimize_indicator(
         indicator_spaces={indicator_name: candidates},
         first_test_date=first_test_date,
         test_months_options=(test_months,),
+        train_months=train_months,
+        refit_date=refit_date,
         min_signals_per_week=min_signals_per_week,
     )
     key = (target, horizon, indicator_name, test_months)
     return summaries.iloc[0].to_dict(), folds, fitted[key]
-

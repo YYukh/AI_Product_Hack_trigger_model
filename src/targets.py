@@ -165,4 +165,3 @@ def build_targets(
 
 def target_columns(data: pd.DataFrame) -> list[str]:
     return [column for column in data.columns if column.startswith("target_")]
-

@@ -2,7 +2,7 @@
 
 Командный репозиторий триггерной модели для трансграничных переводов.
 
-В репозитории реализован воспроизводимый исследовательский pipeline: загрузка официальных дневных курсов Банка России, causal-признаки, разметка targets, walk-forward оптимизация rule-based индикаторов и независимый backtest фиксированных G0/W1-правил.
+В репозитории реализован воспроизводимый исследовательский pipeline: загрузка официальных дневных курсов Банка России, causal-признаки, разметка targets, walk-forward оптимизация rule-based индикаторов, независимый backtest фиксированных G0/W1-правил и ML-индикатор на непрерывных составляющих лучших правил. Отдельный stateful signal pipeline день за днём обновляет просроченные rule/ML-артефакты, формирует единый JSON-вектор, пропускает его через сменяемую метамодель и считает итоговый backtest общего потока.
 
 Требуется Python 3.10 или новее.
 
@@ -26,7 +26,7 @@ jupyter lab
 .venv\Scripts\activate
 ```
 
-После запуска откройте `notebooks/test.ipynb` и выполните все ячейки сверху вниз. Запускайте Jupyter из корня репозитория либо из каталога `notebooks`: ноутбук корректно определяет корень в обоих случаях.
+`notebooks/test.ipynb` содержит исследование и подбор конфигураций. `notebooks/02_signal_pipeline.ipynb` является самостоятельным production-shaped pipeline: он сам загружает данные, строит признаки, воспроизводит raw OOS-поток движков с 2022 года, обучает логистическую метамодель на 2022–2023, валидирует её на 2024 и считает финальный backtest с 2025 года. Второй notebook не зависит от переменных или файлов, созданных первым. Запускайте Jupyter из корня репозитория, его родительской папки либо из каталога `notebooks`.
 
 ## Что делает загрузчик
 
@@ -47,12 +47,29 @@ jupyter lab
 - перебирает одиночные правила и пары правил с `AND`/`OR`;
 - подбирает параметры на train-части walk-forward и оценивает pooled OOS lift;
 - требует не менее двух сигналов в неделю;
-- фиксирует лучшие правила по discovery-периоду и отдельно тестирует G0/W1 на holdout с 2025 года.
+- выбирает лучшие rule-архитектуры на discovery и продолжает их OOS walk-forward с переоптимизацией thresholds перед каждым test-периодом;
+- выбирает частоту переобучения ML на discovery и продолжает OOS walk-forward победителя;
+- для rules и ML использует rolling train-окно последних 24 месяцев вместо expanding train.
+
+## Единый сигнал и метамодель
+
+- в коде зафиксированы победившие rule-архитектуры, parameter grids и cadence; конкретные thresholds переобучаются на прошлом перед каждым OOS-периодом;
+- HistGradientBoosting переобучается на фиксированном cadence 12 месяцев;
+- для каждого rule/ML-движка хранится состояние: fitted artifact, версия, дата обучения, последняя зрелая дата train и следующая дата переобучения;
+- `get_signal` отдаёт JSON-совместимый score каждого движка, включая несработавшие и технические статусы;
+- `filter_signal` является стабильной границей сменяемой метамодели, а `run_signal_day` — единственной дневной точкой входа для production и исторического replay;
+- время `as_of` фиксируется как 09:00 `Europe/Moscow`;
+- rule confidence пересчитывается как precision правила только по уже созревшим прошлым targets, ML confidence — precision на прошлом validation-окне;
+- исходный ML probability хранится отдельно как `raw_score`;
+- простой confidence filter реализован отдельно и может быть заменён другой функцией без изменения upstream-кода и backtest;
+- финальный JSON не содержит будущего значения target;
+- разные горизонты сохраняются как отдельные события.
 
 ## Структура
 
 ```text
-notebooks/test.ipynb             # основной воспроизводимый notebook
+notebooks/test.ipynb             # основной исследовательский notebook
+notebooks/02_signal_pipeline.ipynb # общий поток, meta-model и финальный backtest
 src/cbr_loader.py                # загрузка и нормализация курсов ЦБ
 src/market_data.py               # point-in-time market panel
 src/features.py                  # causal-признаки
@@ -63,6 +80,12 @@ src/indicators.py                # правила и комбинации AND/OR
 src/walk_forward.py              # временные WF-разбиения
 src/indicator_optimization.py    # train-оптимизация и pooled OOS-оценка
 src/indicator_backtest.py        # независимый backtest фиксированных правил
+src/ml_backtest.py               # WF-выбор cadence и backtest ML-индикатора
+src/production_config.py         # frozen rules и ML production config
+src/production_pipeline.py       # состояния, retraining, get_signal и replay
+src/signal_contract.py           # единый evidence contract и adapters
+src/meta_model.py                # сменяемая метамодель и JSON event contract
+src/signal_backtest.py           # pooled backtest финального потока
 tests/                           # автоматические проверки
 data/raw/cbr/                    # локальный XML-кэш, не коммитится
 data/processed/                  # локальные CSV/Parquet, не коммитятся

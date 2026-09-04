@@ -7,9 +7,17 @@ import pandas as pd
 
 
 RETURN_HORIZONS = (1, 3, 5, 10, 20)
-LEVEL_WINDOWS = (30, 90, 180)
+LEVEL_WINDOWS = (20, 30, 60, 90, 120, 180)
 SLOPE_WINDOWS = (3, 5, 10)
-VOLATILITY_WINDOWS = (5, 7, 30)
+VOLATILITY_WINDOWS = (5, 7, 20, 30)
+CONTEXT_CURRENCIES = ("USD", "EUR", "CNY")
+RECIPIENT_COUNTRIES = {
+    "AMD": "AM",
+    "KZT": "KZ",
+    "KGS": "KG",
+    "TJS": "TJ",
+    "UZS": "UZ",
+}
 
 
 def _percentile_of_last(values: np.ndarray) -> float:
@@ -36,6 +44,42 @@ def _streak(values: pd.Series, *, positive: bool) -> pd.Series:
     condition = values.gt(0) if positive else values.lt(0)
     groups = (~condition).cumsum()
     return condition.groupby(groups).cumsum().astype("int16")
+
+
+def _holiday_distances(
+    dates: pd.Series,
+    *,
+    country: str,
+    cap_days: int = 30,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Дни до следующего и после последнего государственного праздника."""
+    try:
+        import holidays
+    except ImportError as error:
+        raise ImportError(
+            "Для календарных признаков установите зависимости из requirements.txt"
+        ) from error
+
+    timestamps = pd.to_datetime(dates)
+    years = range(timestamps.dt.year.min() - 1, timestamps.dt.year.max() + 2)
+    calendar = holidays.country_holidays(country, years=list(years))
+    ordinals = np.asarray(
+        sorted(day.toordinal() for day in calendar),
+        dtype=np.int64,
+    )
+    if not len(ordinals):
+        raise ValueError(f"Не найден календарь праздников для {country}")
+
+    values = np.asarray(
+        [timestamp.date().toordinal() for timestamp in timestamps],
+        dtype=np.int64,
+    )
+    positions = np.searchsorted(ordinals, values, side="right")
+    previous_positions = np.maximum(positions - 1, 0)
+    next_positions = np.minimum(positions, len(ordinals) - 1)
+    days_since = np.minimum(values - ordinals[previous_positions], cap_days)
+    days_to = np.minimum(ordinals[next_positions] - values, cap_days)
+    return days_to.astype("float64"), days_since.astype("float64")
 
 
 def _add_update_streaks(frame: pd.DataFrame) -> pd.DataFrame:
@@ -129,6 +173,19 @@ def build_features(panel: pd.DataFrame) -> pd.DataFrame:
         result[f"zscore_{window}d"] = (
             (result["rate"] - rolling_mean) / rolling_std
         )
+        prior_low = grouped_rate.transform(
+            lambda values: values.shift(1).rolling(
+                window,
+                min_periods=window,
+            ).min()
+        )
+        previous_rate = grouped_rate.shift(1)
+        result[f"previous_distance_from_low_{window}d_bps"] = (
+            (previous_rate / prior_low - 1) * 10_000
+        )
+        result[f"bounce_from_prior_low_{window}d_bps"] = (
+            (result["rate"] / prior_low - 1) * 10_000
+        )
 
     for window in SLOPE_WINDOWS:
         result[f"slope_{window}d_bps_per_day"] = (
@@ -140,13 +197,12 @@ def build_features(panel: pd.DataFrame) -> pd.DataFrame:
 
     result = _add_update_streaks(result)
 
-    result["previous_distance_from_low_30d_bps"] = (
-        result
-        .groupby("currency", sort=False)["distance_from_low_30d_bps"]
-        .shift(1)
-    )
     result["momentum_change_1d_5d_bps"] = (
         result["return_1d_bps"] - result["return_5d_bps"] / 5
+    )
+    result["acceleration_1d_bps"] = (
+        result["return_1d_bps"]
+        - result.groupby("currency", sort=False)["return_1d_bps"].shift(1)
     )
     result["days_since_local_min_30d"] = (
         grouped_rate
@@ -177,10 +233,72 @@ def build_features(panel: pd.DataFrame) -> pd.DataFrame:
     result["month"] = result["available_at"].dt.month.astype("int8")
     result["month_start"] = result["available_at"].dt.is_month_start
     result["month_end"] = result["available_at"].dt.is_month_end
+    month_angle = 2 * np.pi * (result["month"] - 1) / 12
+    result["month_sin"] = np.sin(month_angle)
+    result["month_cos"] = np.cos(month_angle)
+
+    context_columns = []
+    for currency in CONTEXT_CURRENCIES:
+        prefix = currency.lower()
+        source_columns = [
+            "available_at",
+            "return_1d_bps",
+            "return_5d_bps",
+            "return_20d_bps",
+            "rolling_std_20d_bps",
+        ]
+        context = result.loc[
+            result["currency"].eq(currency),
+            source_columns,
+        ].rename(
+            columns={
+                "return_1d_bps": f"{prefix}_return_1d_bps",
+                "return_5d_bps": f"{prefix}_return_5d_bps",
+                "return_20d_bps": f"{prefix}_return_20d_bps",
+                "rolling_std_20d_bps": f"{prefix}_volatility_20d_bps",
+            }
+        )
+        context_columns.extend(context.columns.difference(["available_at"]))
+        result = result.merge(
+            context,
+            on="available_at",
+            how="left",
+            validate="many_to_one",
+        )
+
+    result["russia_days_to_holiday_30"] = np.nan
+    result["russia_days_since_holiday_30"] = np.nan
+    result["recipient_days_to_holiday_30"] = np.nan
+    result["recipient_days_since_holiday_30"] = np.nan
+    for currency, country in RECIPIENT_COUNTRIES.items():
+        mask = result["currency"].eq(currency)
+        if not mask.any():
+            continue
+        recipient_to, recipient_since = _holiday_distances(
+            result.loc[mask, "available_at"],
+            country=country,
+        )
+        russia_to, russia_since = _holiday_distances(
+            result.loc[mask, "available_at"],
+            country="RU",
+        )
+        result.loc[mask, "recipient_days_to_holiday_30"] = recipient_to
+        result.loc[mask, "recipient_days_since_holiday_30"] = recipient_since
+        result.loc[mask, "russia_days_to_holiday_30"] = russia_to
+        result.loc[mask, "russia_days_since_holiday_30"] = russia_since
+
+    result["recipient_preholiday_7"] = (
+        result["recipient_days_to_holiday_30"].between(1, 7).astype("int8")
+    )
+    result["recipient_postholiday_3"] = (
+        result["recipient_days_since_holiday_30"].le(3).astype("int8")
+    )
+    result["russia_preholiday_7"] = (
+        result["russia_days_to_holiday_30"].between(1, 7).astype("int8")
+    )
 
     return (
         result
         .sort_values(["available_at", "currency"])
         .reset_index(drop=True)
     )
-
