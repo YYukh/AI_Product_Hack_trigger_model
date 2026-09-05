@@ -20,7 +20,11 @@ from .meta_model import (
     market_event_records,
     run_meta_model,
 )
-from .ml_backtest import MLIndicatorConfig, fit_calibrated_ml_indicator
+from .ml_backtest import (
+    MLIndicatorConfig,
+    SUPPORTED_POOLING_MODES,
+    fit_calibrated_ml_indicator,
+)
 from .production_config import FixedIndicatorConfig
 
 
@@ -39,6 +43,7 @@ class EngineState:
     retrain_months: int
     train_months: int
     next_retrain_at: pd.Timestamp
+    pooling_mode: str = "per_currency"
     feature_names: tuple[str, ...] = ()
     trained_at: pd.Timestamp | None = None
     trained_through: pd.Timestamp | None = None
@@ -91,7 +96,7 @@ def engine_state_registry(states: dict[str, EngineState]) -> pd.DataFrame:
     """Human-readable snapshot of deployed artifacts and their schedules."""
     columns = (
         "engine_id", "engine_type", "currency", "target_family", "target",
-        "horizon", "architecture", "train_months", "model_version",
+        "horizon", "architecture", "pooling_mode", "train_months", "model_version",
         "configuration_version", "trained_at",
         "trained_through", "next_retrain_at", "last_retrain_attempt_at",
         "last_retrain_error", "confidence",
@@ -120,10 +125,16 @@ def initialize_engine_states(
     ml_feature_names: tuple[str, ...],
     ml_model_type: str,
     ml_retrain_months: int,
+    ml_pooling_mode: str = "per_currency",
 ) -> dict[str, EngineState]:
     """Create empty states; first daily update will train every artifact."""
     if train_months <= 0:
         raise ValueError("train_months должен быть положительным")
+    if ml_pooling_mode not in SUPPORTED_POOLING_MODES:
+        raise ValueError(
+            f"ml_pooling_mode={ml_pooling_mode!r}; "
+            f"доступны {SUPPORTED_POOLING_MODES}"
+        )
     first_due = pd.Timestamp(first_score_date)
     states: dict[str, EngineState] = {}
     for config in rule_configurations:
@@ -167,6 +178,7 @@ def initialize_engine_states(
                 retrain_months=ml_retrain_months,
                 train_months=train_months,
                 next_retrain_at=first_due,
+                pooling_mode=ml_pooling_mode,
                 feature_names=ml_feature_names,
             )
     return states
@@ -199,16 +211,30 @@ def _configuration_version(
             candidate.name for candidate in indicator_spaces[state.architecture]
         )
     else:
-        payload = f"{ml_model_type}|{ml_model_config!r}|{state.feature_names}"
+        payload = (
+            f"{ml_model_type}|{ml_model_config!r}|{state.feature_names}|"
+            f"{state.pooling_mode}"
+        )
     return hashlib.sha256(payload.encode()).hexdigest()[:16]
 
 
-def _mature_train(data: pd.DataFrame, state: EngineState, as_of: pd.Timestamp) -> pd.DataFrame:
+def _mature_train(
+    data: pd.DataFrame,
+    state: EngineState,
+    as_of: pd.Timestamp,
+    *,
+    pooled_currencies: tuple[str, ...] | None = None,
+) -> pd.DataFrame:
     if state.target not in data.columns:
         raise KeyError(f"В data нет target {state.target!r} для {state.engine_id}")
     dates = pd.to_datetime(data["available_at"])
+    currency_mask = (
+        data["currency"].isin(pooled_currencies)
+        if pooled_currencies is not None
+        else data["currency"].eq(state.currency)
+    )
     return data.loc[
-        data["currency"].eq(state.currency)
+        currency_mask
         & dates.ge(as_of - pd.DateOffset(months=state.train_months))
         & dates.add(pd.Timedelta(days=state.horizon)).lt(as_of)
         & data[state.target].notna()
@@ -281,8 +307,11 @@ def _fit_ml_state(
     min_signals_per_week: float,
     model_type: str,
     model_config: MLIndicatorConfig,
+    pooled_currencies: tuple[str, ...] | None = None,
 ) -> dict:
-    train = _mature_train(data, state, as_of).dropna(
+    train = _mature_train(
+        data, state, as_of, pooled_currencies=pooled_currencies
+    ).dropna(
         subset=list(state.feature_names)
     )
     fitted = fit_calibrated_ml_indicator(
@@ -295,6 +324,7 @@ def _fit_ml_state(
         min_signals_per_week=min_signals_per_week,
         model_type=model_type,
         model_config=model_config,
+        pooling_mode=state.pooling_mode,
     )
     if fitted is None:
         return {"fitted": False, "reason": "insufficient_train_or_validation"}
@@ -328,11 +358,24 @@ def update_models_if_due(
     ml_min_signals_per_week: float,
     ml_model_type: str,
     ml_model_config: MLIndicatorConfig,
+    ml_pooling_mode: str = "per_currency",
 ) -> list[dict]:
     """Retrain only due artifacts using labels mature strictly before as_of."""
+    if ml_pooling_mode not in SUPPORTED_POOLING_MODES:
+        raise ValueError(
+            f"ml_pooling_mode={ml_pooling_mode!r}; "
+            f"доступны {SUPPORTED_POOLING_MODES}"
+        )
     current = pd.Timestamp(as_of)
     audit_rows = []
+    pooled_currencies = tuple(sorted({
+        state.currency for state in states.values()
+        if state.engine_type == "ml"
+    }))
+    pooled_artifacts: dict[tuple, dict] = {}
     for state in states.values():
+        if state.engine_type == "ml" and state.pooling_mode != ml_pooling_mode:
+            state.pooling_mode = ml_pooling_mode
         configured_version = _configuration_version(
             state,
             indicator_spaces=indicator_spaces,
@@ -354,15 +397,47 @@ def update_models_if_due(
                 min_signals_per_week=rule_min_signals_per_week,
             )
         elif state.engine_type == "ml":
-            result = _fit_ml_state(
-                state,
-                as_of=current,
-                data=data,
-                validation_months=ml_validation_months,
-                min_signals_per_week=ml_min_signals_per_week,
-                model_type=ml_model_type,
-                model_config=ml_model_config,
+            pooled = state.pooling_mode == "pooled_currencies"
+            pool_key = (
+                state.target, state.horizon, state.architecture,
+                state.train_months, state.retrain_months,
             )
+            if pooled and pool_key in pooled_artifacts:
+                artifact = pooled_artifacts[pool_key]
+                result = artifact["result"].copy()
+                for name in (
+                    "trained_at", "configuration_version", "trained_through",
+                    "payload", "decision_threshold", "confidence",
+                    "confidence_support", "baseline_probability",
+                    "confidence_lift", "model_version", "next_retrain_at",
+                ):
+                    setattr(state, name, artifact[name])
+            else:
+                result = _fit_ml_state(
+                    state,
+                    as_of=current,
+                    data=data,
+                    validation_months=ml_validation_months,
+                    min_signals_per_week=ml_min_signals_per_week,
+                    model_type=ml_model_type,
+                    model_config=ml_model_config,
+                    pooled_currencies=pooled_currencies if pooled else None,
+                )
+                if pooled and result["fitted"]:
+                    pooled_artifacts[pool_key] = {
+                        "result": result.copy(),
+                        **{
+                            name: getattr(state, name)
+                            for name in (
+                                "trained_at", "configuration_version",
+                                "trained_through", "payload",
+                                "decision_threshold", "confidence",
+                                "confidence_support", "baseline_probability",
+                                "confidence_lift", "model_version",
+                                "next_retrain_at",
+                            )
+                        },
+                    }
         else:
             raise ValueError(f"Unknown engine_type={state.engine_type!r}")
         state.last_retrain_error = None if result["fitted"] else result["reason"]
@@ -376,6 +451,7 @@ def update_models_if_due(
             "target": state.target,
             "horizon": state.horizon,
             "architecture": state.architecture,
+            "pooling_mode": state.pooling_mode,
             "train_months": state.train_months,
             "model_version": state.model_version,
             "configuration_version": state.configuration_version,
@@ -453,6 +529,8 @@ def get_signal(
                 model_input = row.to_frame().T.loc[
                     :, list(state.feature_names)
                 ].astype(float)
+                if state.pooling_mode == "pooled_currencies":
+                    model_input["currency"] = state.currency
                 score = float(state.payload.predict_proba(model_input)[0, 1])
                 fired = score >= state.decision_threshold
 
@@ -483,11 +561,15 @@ def get_signal(
             "signal": fired,
             "raw_score": score,
             "decision_threshold": state.decision_threshold,
-            "confidence": state.confidence,
+            "confidence": (
+                score
+                if state.engine_type == "ml" and score is not None
+                else state.confidence
+            ),
             "confidence_method": (
                 "train_precision_of_refitted_rule"
                 if state.engine_type == "rule"
-                else "past_validation_precision_at_threshold"
+                else "model_predict_proba"
             ),
             "confidence_support": state.confidence_support,
             "baseline_probability": state.baseline_probability,
@@ -548,6 +630,7 @@ def run_signal_day(
     ml_min_signals_per_week: float,
     ml_model_type: str,
     ml_model_config: MLIndicatorConfig,
+    ml_pooling_mode: str = "per_currency",
     meta_model: MetaModel = confidence_filter_meta_model,
     meta_config: object = ConfidenceFilterConfig(),
 ) -> DailyPipelineResult:
@@ -562,6 +645,7 @@ def run_signal_day(
         ml_min_signals_per_week=ml_min_signals_per_week,
         ml_model_type=ml_model_type,
         ml_model_config=ml_model_config,
+        ml_pooling_mode=ml_pooling_mode,
     )
     raw_signals = get_signal(
         as_of=as_of,
@@ -588,6 +672,7 @@ def replay_daily_pipeline(
     ml_min_signals_per_week: float,
     ml_model_type: str,
     ml_model_config: MLIndicatorConfig,
+    ml_pooling_mode: str = "per_currency",
     meta_model: MetaModel = confidence_filter_meta_model,
     meta_config: object = ConfidenceFilterConfig(),
 ) -> ReplayResult:
@@ -608,6 +693,7 @@ def replay_daily_pipeline(
             ml_min_signals_per_week=ml_min_signals_per_week,
             ml_model_type=ml_model_type,
             ml_model_config=ml_model_config,
+            ml_pooling_mode=ml_pooling_mode,
             meta_model=meta_model,
             meta_config=meta_config,
         )
@@ -636,6 +722,7 @@ def replay_engine_signals(
     ml_min_signals_per_week: float,
     ml_model_type: str,
     ml_model_config: MLIndicatorConfig,
+    ml_pooling_mode: str = "per_currency",
 ) -> EngineReplayResult:
     """Replay only base engines; meta-model is deliberately not called."""
     dates = pd.to_datetime(data["available_at"])
@@ -655,6 +742,7 @@ def replay_engine_signals(
             ml_min_signals_per_week=ml_min_signals_per_week,
             ml_model_type=ml_model_type,
             ml_model_config=ml_model_config,
+            ml_pooling_mode=ml_pooling_mode,
         ))
         raw_records.extend(get_signal(
             as_of=as_of,

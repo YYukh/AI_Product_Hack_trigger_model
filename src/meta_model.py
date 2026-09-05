@@ -25,10 +25,18 @@ class ConfidenceFilterConfig:
     min_confidence: float = 0.70
     min_support: int = 10
     min_sources: int = 1
+    rule_min_confidence: float | None = None
+    ml_min_confidence: float | None = None
 
     def __post_init__(self) -> None:
         if not 0 <= self.min_confidence <= 1:
             raise ValueError("min_confidence должен лежать в [0, 1]")
+        for name, value in (
+            ("rule_min_confidence", self.rule_min_confidence),
+            ("ml_min_confidence", self.ml_min_confidence),
+        ):
+            if value is not None and not 0 <= value <= 1:
+                raise ValueError(f"{name} должен лежать в [0, 1]")
         if self.min_support < 0:
             raise ValueError("min_support не может быть отрицательным")
         if self.min_sources <= 0:
@@ -254,11 +262,13 @@ def fit_logistic_meta_model(
     validation_start = end - pd.DateOffset(months=validation_months)
     data = labelled_candidates.copy()
     dates = pd.to_datetime(data["available_at"])
-    mature = dates.add(pd.to_timedelta(data["horizon"], unit="D")).lt(end)
+    horizon_delta = pd.to_timedelta(data["horizon"], unit="D")
+    fit_mature = dates.add(horizon_delta).lt(validation_start)
+    validation_mature = dates.add(horizon_delta).lt(end)
     validation = data.loc[
-        dates.ge(validation_start) & dates.lt(end) & mature
+        dates.ge(validation_start) & dates.lt(end) & validation_mature
     ].copy()
-    fit = data.loc[dates.lt(validation_start) & mature].copy()
+    fit = data.loc[dates.lt(validation_start) & fit_mature].copy()
     if fit.empty or validation.empty or fit["target_value"].nunique() < 2:
         raise ValueError("Недостаточно OOS-данных для обучения meta-model")
 
@@ -310,7 +320,7 @@ def fit_logistic_meta_model(
         evaluated, key=lambda row: (row[0], row[1], row[2])
     )
 
-    training = data.loc[dates.lt(end) & mature].copy()
+    training = data.loc[dates.lt(end) & validation_mature].copy()
     if training["target_value"].nunique() < 2:
         raise ValueError("В полном meta train только один класс")
     estimator.fit(training.loc[:, LOGISTIC_FEATURES], training["target_value"].astype(int))
@@ -377,9 +387,21 @@ def confidence_filter_meta_model(
     if missing:
         raise KeyError(f"В evidence нет полей: {sorted(missing)}")
 
+    thresholds = evidence["engine_type"].map({
+        "rule": (
+            config.min_confidence
+            if config.rule_min_confidence is None
+            else config.rule_min_confidence
+        ),
+        "ml": (
+            config.min_confidence
+            if config.ml_min_confidence is None
+            else config.ml_min_confidence
+        ),
+    }).fillna(config.min_confidence)
     accepted = evidence.loc[
         evidence["signal"].astype(bool)
-        & evidence["confidence"].ge(config.min_confidence)
+        & evidence["confidence"].ge(thresholds)
         & evidence["confidence_support"].ge(config.min_support)
     ].copy()
     if accepted.empty:

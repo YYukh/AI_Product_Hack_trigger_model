@@ -65,7 +65,19 @@ def _metrics(sample: pd.DataFrame) -> dict:
     true_positive = int((sample["signal"] & sample["target_value"]).sum())
     false_positive = signal_count - true_positive
     precision = true_positive / signal_count if signal_count else 0.0
-    random_precision = positive_count / observations if observations else 0.0
+    unconditional_random_precision = (
+        positive_count / observations if observations else 0.0
+    )
+    # For aggregate reports the emitted signals are not distributed uniformly
+    # across target families and horizons.  Compare them with random dates from
+    # the *same realised configuration mix*, otherwise choosing an intrinsically
+    # frequent target would be incorrectly credited as timing skill.
+    if signal_count and "_stratum_random_precision" in sample.columns:
+        random_precision = float(
+            sample.loc[sample["signal"], "_stratum_random_precision"].mean()
+        )
+    else:
+        random_precision = unconditional_random_precision
     date_span_days = (
         sample["available_at"].max() - sample["available_at"].min()
     ).days + 1 if observations else 0
@@ -74,6 +86,18 @@ def _metrics(sample: pd.DataFrame) -> dict:
         pd.to_numeric(sample.loc[sample["signal"], "benefit_bps"], errors="coerce")
         if "benefit_bps" in sample.columns else pd.Series(dtype=float)
     ).dropna()
+    random_benefit = (
+        pd.to_numeric(
+            sample.loc[sample["signal"], "_stratum_random_benefit_bps"],
+            errors="coerce",
+        ).dropna()
+        if "_stratum_random_benefit_bps" in sample.columns
+        else pd.Series(dtype=float)
+    )
+    mean_benefit_bps = float(benefit.mean()) if len(benefit) else np.nan
+    random_mean_benefit_bps = (
+        float(random_benefit.mean()) if len(random_benefit) else np.nan
+    )
     return {
         "observations": observations,
         "positive_count": positive_count,
@@ -85,7 +109,13 @@ def _metrics(sample: pd.DataFrame) -> dict:
         "lift": precision / random_precision if random_precision else np.nan,
         "calendar_weeks": calendar_weeks,
         "signals_per_week": signal_count / calendar_weeks if calendar_weeks else 0.0,
-        "mean_benefit_bps": float(benefit.mean()) if len(benefit) else np.nan,
+        "mean_benefit_bps": mean_benefit_bps,
+        "random_mean_benefit_bps": random_mean_benefit_bps,
+        "benefit_uplift_bps": (
+            mean_benefit_bps - random_mean_benefit_bps
+            if pd.notna(mean_benefit_bps) and pd.notna(random_mean_benefit_bps)
+            else np.nan
+        ),
         "positive_benefit_rate": float((benefit > 0).mean()) if len(benefit) else 0.0,
     }
 
@@ -147,6 +177,20 @@ def backtest_signal_stream(
         validate="one_to_one",
     )
     scored["signal"] = scored["event_id"].notna()
+    exact_configuration = [
+        "currency", "scenario", "target_family", "target", "horizon",
+    ]
+    scored["_stratum_random_precision"] = (
+        scored.groupby(exact_configuration, sort=False)["target_value"]
+        .transform("mean")
+        .astype(float)
+    )
+    if "benefit_bps" in scored.columns:
+        scored["_stratum_random_benefit_bps"] = (
+            scored.groupby(exact_configuration, sort=False)["benefit_bps"]
+            .transform("mean")
+            .astype(float)
+        )
 
     rows: list[dict] = []
     dimensions = (

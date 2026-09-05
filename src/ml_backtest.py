@@ -8,8 +8,9 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import ExtraTreesClassifier, HistGradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from .walk_forward import make_periodic_walk_forward_folds
 
@@ -19,6 +20,7 @@ SUPPORTED_MODEL_TYPES = (
     "hist_gradient_boosting",
     "extra_trees",
 )
+SUPPORTED_POOLING_MODES = ("per_currency", "pooled_currencies")
 
 
 @dataclass(frozen=True)
@@ -37,8 +39,63 @@ def build_ml_indicator(
     model_type: str = "logistic_regression",
     *,
     config: MLIndicatorConfig = MLIndicatorConfig(),
+    pooling_mode: str = "per_currency",
+    feature_names: tuple[str, ...] = (),
 ):
     """Построить одну из поддерживаемых моделей с фиксированными настройками."""
+    if pooling_mode not in SUPPORTED_POOLING_MODES:
+        raise ValueError(
+            f"pooling_mode={pooling_mode!r}; доступны {SUPPORTED_POOLING_MODES}"
+        )
+    if pooling_mode == "pooled_currencies":
+        if not feature_names:
+            raise ValueError("Для pooled ML нужны numeric feature_names")
+        numeric = list(feature_names)
+        if model_type == "logistic_regression":
+            preprocessor = ColumnTransformer([
+                ("numeric", StandardScaler(), numeric),
+                ("currency", OneHotEncoder(handle_unknown="ignore"), ["currency"]),
+            ])
+            model = LogisticRegression(
+                max_iter=2_000,
+                class_weight="balanced",
+                random_state=config.random_state,
+            )
+        elif model_type == "hist_gradient_boosting":
+            preprocessor = ColumnTransformer([
+                ("numeric", "passthrough", numeric),
+                ("currency", OneHotEncoder(handle_unknown="ignore", sparse_output=False), ["currency"]),
+            ])
+            model = HistGradientBoostingClassifier(
+                learning_rate=config.learning_rate,
+                max_iter=config.max_iter,
+                max_leaf_nodes=config.max_leaf_nodes,
+                min_samples_leaf=config.min_samples_leaf,
+                l2_regularization=config.l2_regularization,
+                class_weight="balanced",
+                random_state=config.random_state,
+            )
+        elif model_type == "extra_trees":
+            preprocessor = ColumnTransformer([
+                ("numeric", "passthrough", numeric),
+                ("currency", OneHotEncoder(handle_unknown="ignore", sparse_output=False), ["currency"]),
+            ])
+            model = ExtraTreesClassifier(
+                n_estimators=60,
+                max_depth=8,
+                min_samples_leaf=10,
+                max_features=0.8,
+                class_weight="balanced",
+                n_jobs=-1,
+                random_state=config.random_state,
+            )
+        else:
+            raise ValueError(
+                f"Неизвестный model_type={model_type!r}; "
+                f"допустимы {SUPPORTED_MODEL_TYPES}"
+            )
+        return Pipeline([("preprocessor", preprocessor), ("model", model)])
+
     if model_type == "logistic_regression":
         return make_pipeline(
             StandardScaler(),
@@ -89,6 +146,7 @@ def _choose_probability_threshold(
     *,
     calendar_weeks: float,
     min_signals_per_week: float,
+    currencies: np.ndarray | None = None,
 ) -> tuple[float, dict] | None:
     """Maximize validation lift subject to the signal-frequency constraint."""
     probabilities = np.asarray(probabilities, dtype="float64")
@@ -97,6 +155,10 @@ def _choose_probability_threshold(
         return None
 
     minimum_count = max(1, int(np.ceil(min_signals_per_week * calendar_weeks)))
+    currency_values = None if currencies is None else np.asarray(currencies)
+    distinct_currencies = (
+        np.unique(currency_values) if currency_values is not None else np.array([])
+    )
     thresholds = np.unique(probabilities)[::-1]
     best: tuple[tuple[float, float, int], float, dict] | None = None
     baseline = float(target.mean())
@@ -104,6 +166,11 @@ def _choose_probability_threshold(
         prediction = probabilities >= threshold
         signal_count = int(prediction.sum())
         if signal_count < minimum_count:
+            continue
+        if len(distinct_currencies) and any(
+            int(prediction[currency_values == currency].sum()) < minimum_count
+            for currency in distinct_currencies
+        ):
             continue
         true_positive = int(np.sum(prediction & target))
         precision = true_positive / signal_count
@@ -118,7 +185,9 @@ def _choose_probability_threshold(
             "validation_precision": precision,
             "validation_random_precision": baseline,
             "validation_lift": lift,
-            "validation_signals_per_week": signal_count / calendar_weeks,
+            "validation_signals_per_week": (
+                signal_count / calendar_weeks / max(len(distinct_currencies), 1)
+            ),
         }
         if best is None or score > best[0]:
             best = (score, float(threshold), metrics)
@@ -218,6 +287,7 @@ def fit_calibrated_ml_indicator(
     min_signals_per_week: float,
     model_type: str,
     model_config: MLIndicatorConfig,
+    pooling_mode: str = "per_currency",
 ) -> tuple[object, float, dict] | None:
     """Fit one ML artifact using only matured history before ``retrain_at``."""
     validation_start = retrain_at - pd.DateOffset(months=validation_months)
@@ -232,10 +302,20 @@ def fit_calibrated_ml_indicator(
     if fit[target].nunique() < 2 or train[target].nunique() < 2:
         return None
 
-    calibration_model = build_ml_indicator(model_type, config=model_config)
-    calibration_model.fit(fit.loc[:, feature_names], fit[target].astype(int))
+    model_features = (
+        (*feature_names, "currency")
+        if pooling_mode == "pooled_currencies"
+        else feature_names
+    )
+    calibration_model = build_ml_indicator(
+        model_type,
+        config=model_config,
+        pooling_mode=pooling_mode,
+        feature_names=feature_names,
+    )
+    calibration_model.fit(fit.loc[:, model_features], fit[target].astype(int))
     validation_probability = calibration_model.predict_proba(
-        validation.loc[:, feature_names]
+        validation.loc[:, model_features]
     )[:, 1]
     validation_weeks = _calendar_weeks(
         validation["available_at"].min(),
@@ -246,13 +326,22 @@ def fit_calibrated_ml_indicator(
         validation[target].to_numpy(dtype=bool),
         calendar_weeks=validation_weeks,
         min_signals_per_week=min_signals_per_week,
+        currencies=(
+            validation["currency"].to_numpy()
+            if pooling_mode == "pooled_currencies" else None
+        ),
     )
     if selected is None:
         return None
     threshold, validation_metrics = selected
 
-    model = build_ml_indicator(model_type, config=model_config)
-    model.fit(train.loc[:, feature_names], train[target].astype(int))
+    model = build_ml_indicator(
+        model_type,
+        config=model_config,
+        pooling_mode=pooling_mode,
+        feature_names=feature_names,
+    )
+    model.fit(train.loc[:, model_features], train[target].astype(int))
     audit = {
         **validation_metrics,
         "fit_start": fit["available_at"].min(),
