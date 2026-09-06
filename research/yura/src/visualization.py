@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 import math
 
 import matplotlib.pyplot as plt
@@ -14,6 +15,22 @@ DARK_RED = "#8b0000"
 BLACK = "#161616"
 GRAY = "#777777"
 LIGHT_GRAY = "#e5e5e5"
+
+VARIANT_COLORS = {
+    "pooled": "#d32f2f",
+    "hybrid": "#161616",
+    "per_currency": "#888888",
+}
+VARIANT_LINESTYLES = {
+    "threshold": "-",
+    "logistic_regression": "--",
+    "extra_trees": ":",
+}
+VARIANT_MARKERS = {
+    "threshold": "o",
+    "logistic_regression": "s",
+    "extra_trees": "^",
+}
 
 
 def _style() -> None:
@@ -143,6 +160,7 @@ def plot_holdout_sequential_metrics(
     *,
     rolling_signals: int = 25,
     warmup_signals: int = 20,
+    title: str = "Holdout: накопительная и текущая устойчивость после каждого сигнала",
 ):
     """Plot cumulative history and recent quality after every signal."""
     _style()
@@ -196,11 +214,176 @@ def plot_holdout_sequential_metrics(
             ax.tick_params(axis="x", rotation=25)
             ax.legend(frameon=False, loc="best")
 
-    fig.suptitle(
-        "Holdout: накопительная и текущая устойчивость после каждого сигнала",
-        fontsize=16, fontweight="bold",
-    )
+    fig.suptitle(title, fontsize=16, fontweight="bold")
     fig.tight_layout()
+    return fig
+
+
+def plot_holdout_quarterly_lift(
+    quarterly_report: pd.DataFrame,
+    *,
+    currencies: tuple[str, ...] | list[str] | None = None,
+    title: str = "Устойчивость lift по кварталам и валютам",
+):
+    """Plot raw quarterly lift and the actual signal count behind each point."""
+    _style()
+    required = {"currency", "quarter", "signal_count", "lift"}
+    if missing := required.difference(quarterly_report.columns):
+        raise KeyError(f"В quarterly_report нет полей: {sorted(missing)}")
+    rows = quarterly_report.copy()
+    if rows.empty:
+        raise ValueError("Квартальный holdout-отчёт пуст")
+    rows["quarter"] = rows["quarter"].astype(str)
+    rows["lift"] = pd.to_numeric(rows["lift"], errors="coerce")
+    rows = rows.sort_values(["currency", "quarter"])
+    available = set(rows["currency"])
+    selected = (
+        [currency for currency in currencies if currency in available]
+        if currencies is not None else sorted(available)
+    )
+    columns = 2
+    plot_rows = math.ceil(len(selected) / columns)
+    fig, axes = plt.subplots(
+        plot_rows, columns, figsize=(15, 4.2 * plot_rows),
+        constrained_layout=True, squeeze=False,
+    )
+    flat_axes = axes.ravel()
+    for ax, currency in zip(flat_axes, selected):
+        sample = rows.loc[rows["currency"].eq(currency)].reset_index(drop=True)
+        positions = np.arange(len(sample))
+        ax.plot(
+            positions, sample["lift"], color=RED, marker="o",
+            markersize=6, linewidth=2.2,
+        )
+        ax.axhline(1.0, color=BLACK, linestyle="--", linewidth=1.1)
+        ax.set_xticks(
+            positions, sample["quarter"], rotation=35, ha="right"
+        )
+        ax.set_title(f"RUB/{currency}", loc="left", fontweight="bold")
+        ax.set_ylabel("Квартальный lift")
+        ax.set_facecolor("#f7f7f7")
+        ax.grid(axis="y", color=LIGHT_GRAY, linewidth=0.8)
+        finite = sample["lift"].dropna()
+        upper = max(1.25, float(finite.max()) * 1.18) if len(finite) else 1.25
+        ax.set_ylim(-0.08, upper)
+        for position, row in sample.iterrows():
+            if pd.notna(row["lift"]):
+                ax.annotate(
+                    f"n={int(row['signal_count'])}",
+                    (position, row["lift"]), xytext=(0, 8),
+                    textcoords="offset points", ha="center",
+                    fontsize=8, color=BLACK,
+                )
+    for ax in flat_axes[len(selected):]:
+        ax.remove()
+    fig.suptitle(title, fontsize=16, fontweight="bold")
+    return fig
+
+
+def _ordered_variant_keys(results: Mapping) -> list[tuple[str, str]]:
+    preferred = [
+        (scope, selector)
+        for scope in ("pooled", "hybrid", "per_currency")
+        for selector in ("threshold", "logistic_regression", "extra_trees")
+    ]
+    return [key for key in preferred if key in results]
+
+
+def plot_variant_cumulative_lift(results: Mapping):
+    """Compare cumulative holdout lift of all scope-selector variants."""
+    _style()
+    keys = _ordered_variant_keys(results)
+    if not keys:
+        raise ValueError("Нет успешно рассчитанных вариантов")
+    sequential = {
+        key: build_sequential_metrics(results[key].backtest_rows)
+        for key in keys
+    }
+    currencies = list(results[keys[0]].config.currencies)
+    fig, axes = plt.subplots(
+        math.ceil(len(currencies) / 2), 2,
+        figsize=(17, 4.2 * math.ceil(len(currencies) / 2)),
+        constrained_layout=True, squeeze=False,
+    )
+    flat_axes = axes.ravel()
+    for ax, currency in zip(flat_axes, currencies):
+        for scope, selector in keys:
+            sample = sequential[(scope, selector)]
+            sample = sample.loc[sample["currency"].eq(currency)]
+            ax.plot(
+                sample["available_at"], sample["cumulative_lift"],
+                color=VARIANT_COLORS[scope],
+                linestyle=VARIANT_LINESTYLES[selector], linewidth=1.8,
+                alpha=0.9, label=f"{scope} | {selector}",
+            )
+        ax.axhline(1.0, color=GRAY, linestyle="--", linewidth=1.0)
+        ax.set_title(f"RUB/{currency}", loc="left", fontweight="bold")
+        ax.set_ylabel("Накопительный lift")
+        ax.grid(axis="y", color=LIGHT_GRAY, linewidth=0.8)
+        ax.tick_params(axis="x", rotation=25)
+    for ax in flat_axes[len(currencies):]:
+        ax.remove()
+    handles, labels = flat_axes[0].get_legend_handles_labels()
+    fig.legend(
+        handles, labels, loc="upper center", bbox_to_anchor=(0.5, 1.01),
+        ncol=3, frameon=False,
+    )
+    fig.suptitle(
+        "Holdout: накопительный lift — все варианты",
+        fontsize=16, fontweight="bold", y=1.045,
+    )
+    return fig
+
+
+def plot_variant_quarterly_lift(results: Mapping):
+    """Compare raw quarterly holdout lift of all scope-selector variants."""
+    _style()
+    keys = _ordered_variant_keys(results)
+    if not keys:
+        raise ValueError("Нет успешно рассчитанных вариантов")
+    currencies = list(results[keys[0]].config.currencies)
+    fig, axes = plt.subplots(
+        math.ceil(len(currencies) / 2), 2,
+        figsize=(17, 4.2 * math.ceil(len(currencies) / 2)),
+        constrained_layout=True, squeeze=False,
+    )
+    flat_axes = axes.ravel()
+    for ax, currency in zip(flat_axes, currencies):
+        reference_quarters: list[str] = []
+        for scope, selector in keys:
+            sample = results[(scope, selector)].holdout_quarterly_stability.copy()
+            sample = sample.loc[sample["currency"].eq(currency)].sort_values("quarter")
+            quarters = sample["quarter"].astype(str).tolist()
+            if not reference_quarters:
+                reference_quarters = quarters
+            positions = np.arange(len(sample))
+            ax.plot(
+                positions, pd.to_numeric(sample["lift"], errors="coerce"),
+                color=VARIANT_COLORS[scope],
+                linestyle=VARIANT_LINESTYLES[selector],
+                marker=VARIANT_MARKERS[selector], markersize=4,
+                linewidth=1.7, alpha=0.9,
+                label=f"{scope} | {selector}",
+            )
+        ax.set_xticks(
+            np.arange(len(reference_quarters)), reference_quarters,
+            rotation=35, ha="right",
+        )
+        ax.axhline(1.0, color=GRAY, linestyle="--", linewidth=1.0)
+        ax.set_title(f"RUB/{currency}", loc="left", fontweight="bold")
+        ax.set_ylabel("Квартальный lift")
+        ax.grid(axis="y", color=LIGHT_GRAY, linewidth=0.8)
+    for ax in flat_axes[len(currencies):]:
+        ax.remove()
+    handles, labels = flat_axes[0].get_legend_handles_labels()
+    fig.legend(
+        handles, labels, loc="upper center", bbox_to_anchor=(0.5, 1.01),
+        ncol=3, frameon=False,
+    )
+    fig.suptitle(
+        "Holdout: квартальный lift — все варианты",
+        fontsize=16, fontweight="bold", y=1.045,
+    )
     return fig
 
 

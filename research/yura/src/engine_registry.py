@@ -7,7 +7,7 @@ from typing import Callable, Mapping
 
 from .config import YuraPipelineConfig
 from .models import build_benefit_regressor, build_classifier
-from .rules import RULE_LIBRARY, RuleVariant
+from .rules import RULE_LIBRARY, RuleCandidate
 
 
 ModelBuilder = Callable[[YuraPipelineConfig], object]
@@ -15,7 +15,7 @@ ModelBuilder = Callable[[YuraPipelineConfig], object]
 
 @dataclass(frozen=True)
 class MLModelSpec:
-    """Named probability model trained once per target family and refit."""
+    """Named probability estimator trained under the configured ML scope."""
 
     name: str
     builder: ModelBuilder
@@ -25,7 +25,7 @@ class MLModelSpec:
 class EngineRegistry:
     """Immutable list of engines used by one reproducible replay."""
 
-    rule_library: Mapping[str, tuple[RuleVariant, ...]]
+    rule_library: Mapping[str, tuple[RuleCandidate, ...]]
     ml_models: tuple[MLModelSpec, ...]
     benefit_model_builder: ModelBuilder
 

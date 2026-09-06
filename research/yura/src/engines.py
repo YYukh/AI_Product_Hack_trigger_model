@@ -1,4 +1,4 @@
-"""Causal rolling walk-forward for simple rules and pooled ML."""
+"""Causal rolling walk-forward for simple rules and configurable ML scope."""
 
 from __future__ import annotations
 
@@ -7,16 +7,19 @@ import hashlib
 
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
-
 from .config import YuraPipelineConfig
 from .engine_registry import EngineRegistry, default_engine_registry
 from .models import (
     ML_FEATURES,
+    build_probability_calibrator,
+    calibration_frame,
     model_columns,
     validate_feature_schema,
 )
-from .rules import RuleVariant
+from .advanced_indicators import (
+    PRODUCTION_ADVANCED_FEATURES, add_production_indicator_features,
+)
+from .rules import RuleCandidate
 
 
 KEYS = ("available_at", "currency", "scenario", "target_family", "target", "horizon")
@@ -27,6 +30,15 @@ class BaseReplayResult:
     candidates: pd.DataFrame
     audit: pd.DataFrame
     rule_oos_metrics: pd.DataFrame
+
+
+@dataclass
+class _ProbabilityEngine:
+    classifier: object
+    calibrator: object | None
+    include_currency_in_calibration: bool
+    include_horizon_in_calibration: bool
+    architecture: str
 
 
 def _target_definitions(
@@ -66,19 +78,19 @@ def _calendar_weeks(frame: pd.DataFrame) -> float:
 
 def _fit_rule_variant(
     train: pd.DataFrame,
-    variants: tuple[RuleVariant, ...],
+    variants: tuple[RuleCandidate, ...],
     *,
     target: str,
     horizon: int,
     config: YuraPipelineConfig,
-) -> tuple[RuleVariant, dict] | None:
+) -> tuple[RuleCandidate, dict] | None:
     weeks = _calendar_weeks(train)
     currencies = tuple(sorted(train["currency"].unique()))
     if not weeks or not currencies:
         return None
     baseline_by_currency = train.groupby("currency")[target].mean().to_dict()
     benefit_column = f"local_advantage_{horizon}d_bps"
-    best: tuple[tuple[float, float, float, int], RuleVariant, dict] | None = None
+    best: tuple[tuple[float, float, float, int], RuleCandidate, dict] | None = None
 
     for variant in variants:
         prediction = variant.predict(train)
@@ -176,7 +188,7 @@ def _base_candidate(
     engine_name: str,
     engine_version: str,
     confidence: np.ndarray,
-    baseline: float,
+    baseline: float | np.ndarray,
     expected_bps: np.ndarray,
     trained_at: pd.Timestamp,
     trained_through: pd.Timestamp,
@@ -190,10 +202,13 @@ def _base_candidate(
     result["engine_name"] = engine_name
     result["engine_version"] = engine_version
     result["confidence"] = np.asarray(confidence, dtype=float)
-    result["baseline_probability"] = float(baseline)
+    baseline_values = np.broadcast_to(
+        np.asarray(baseline, dtype=float), len(result)
+    ).copy()
+    result["baseline_probability"] = baseline_values
     result["confidence_lift"] = np.divide(
-        result["confidence"].to_numpy(dtype=float), baseline,
-        out=np.zeros(len(result), dtype=float), where=baseline > 0,
+        result["confidence"].to_numpy(dtype=float), baseline_values,
+        out=np.zeros(len(result), dtype=float), where=baseline_values > 0,
     )
     result["expected_bps"] = np.asarray(expected_bps, dtype=float)
     result["trained_at"] = trained_at
@@ -319,6 +334,125 @@ def _causal_rule_confidence(
     return result, pd.DataFrame(metric_rows)
 
 
+def _group_balanced_weights(
+    frame: pd.DataFrame,
+    groups: tuple[str, ...],
+) -> np.ndarray:
+    """Give every declared stratum equal total loss mass."""
+    counts = frame.groupby(list(groups), sort=False)[groups[0]].transform("size")
+    weights = 1.0 / counts.to_numpy(dtype=float)
+    return weights / weights.mean()
+
+
+def _fit_probability_engine(
+    training: pd.DataFrame,
+    *,
+    model_spec: object,
+    config: YuraPipelineConfig,
+    period_start: pd.Timestamp,
+    mode: str,
+) -> _ProbabilityEngine | None:
+    """Fit one model and a strictly later temporal probability calibrator."""
+    if training.empty or training["_target_value"].nunique() < 2:
+        return None
+    calibration_start = period_start - pd.DateOffset(months=config.retrain_months)
+    dates = pd.to_datetime(training["available_at"])
+    maturity = dates + pd.to_timedelta(training["horizon"].astype(int), unit="D")
+    fit_part = training.loc[maturity.lt(calibration_start)].copy()
+    calibration_part = training.loc[
+        dates.ge(calibration_start) & maturity.lt(period_start)
+    ].copy()
+    can_calibrate = (
+        not fit_part.empty
+        and not calibration_part.empty
+        and fit_part["_target_value"].nunique() == 2
+        and calibration_part["_target_value"].nunique() == 2
+    )
+    fit_rows = fit_part if can_calibrate else training
+    classifier = model_spec.builder(config)
+    fit_kwargs = {}
+    if mode != "pooled":
+        balance_groups = (
+            ("currency", "horizon") if mode == "hybrid" else ("horizon",)
+        )
+        fit_kwargs["model__sample_weight"] = _group_balanced_weights(
+            fit_rows, balance_groups
+        )
+    classifier.fit(
+        fit_rows.loc[:, list(model_columns())],
+        fit_rows["_target_value"],
+        **fit_kwargs,
+    )
+
+    include_currency = mode == "hybrid"
+    include_horizon = mode in {"hybrid", "per_currency"}
+    calibrator = None
+    if can_calibrate:
+        raw = classifier.predict_proba(
+            calibration_part.loc[:, list(model_columns())]
+        )[:, 1]
+        calibrator = build_probability_calibrator(
+            config,
+            include_currency=include_currency,
+            include_horizon=include_horizon,
+        )
+        calibrator.fit(
+            calibration_frame(
+                raw,
+                calibration_part,
+                include_currency=include_currency,
+                include_horizon=include_horizon,
+            ),
+            calibration_part["_target_value"],
+        )
+    architecture = {
+        "pooled": "pooled_currency_and_horizon",
+        "hybrid": "pooled_balanced_with_contextual_calibration",
+        "per_currency": "per_currency_pooled_horizons",
+    }[mode]
+    return _ProbabilityEngine(
+        classifier=classifier,
+        calibrator=calibrator,
+        include_currency_in_calibration=include_currency,
+        include_horizon_in_calibration=include_horizon,
+        architecture=architecture,
+    )
+
+
+def _predict_probability(
+    fitted: _ProbabilityEngine,
+    frame: pd.DataFrame,
+) -> np.ndarray:
+    raw = fitted.classifier.predict_proba(
+        frame.loc[:, list(model_columns())]
+    )[:, 1]
+    if fitted.calibrator is None:
+        return raw
+    calibration = calibration_frame(
+        raw,
+        frame,
+        include_currency=fitted.include_currency_in_calibration,
+        include_horizon=fitted.include_horizon_in_calibration,
+    )
+    return fitted.calibrator.predict_proba(calibration)[:, 1]
+
+
+def _local_training_baseline(
+    train: pd.DataFrame,
+    score: pd.DataFrame,
+    *,
+    target: str,
+    prior_strength: float,
+) -> np.ndarray:
+    """Smoothed train prevalence for the score row's own currency stratum."""
+    pooled = float(train[target].mean())
+    statistics = train.groupby("currency", sort=False)[target].agg(["sum", "count"])
+    numerator = statistics["sum"] + prior_strength * pooled
+    denominator = statistics["count"] + prior_strength
+    local = (numerator / denominator).to_dict()
+    return score["currency"].map(local).fillna(pooled).to_numpy(dtype=float)
+
+
 def replay_base_engines(
     data: pd.DataFrame,
     *,
@@ -328,11 +462,16 @@ def replay_base_engines(
 ) -> BaseReplayResult:
     """Generate causal OOS rule and ML candidates through rolling WF."""
     registry = engine_registry or default_engine_registry()
+    prepared_input = data
+    if set(PRODUCTION_ADVANCED_FEATURES).difference(prepared_input.columns):
+        prepared_input = add_production_indicator_features(prepared_input)
     required = {"available_at", "currency", *ML_FEATURES}
-    if missing := required.difference(data.columns):
+    if missing := required.difference(prepared_input.columns):
         raise KeyError(f"В data нет полей: {sorted(missing)}")
-    validate_feature_schema(set(data.columns))
-    prepared = data.loc[data["currency"].isin(config.currencies)].copy()
+    validate_feature_schema(set(prepared_input.columns))
+    prepared = prepared_input.loc[
+        prepared_input["currency"].isin(config.currencies)
+    ].copy()
     prepared["available_at"] = pd.to_datetime(prepared["available_at"])
     definitions = _target_definitions(target_registry, config)
     last_date = prepared["available_at"].max()
@@ -394,15 +533,20 @@ def replay_base_engines(
         )
         lower, upper = benefit_target.quantile([0.01, 0.99])
         benefit_regressor = registry.benefit_model_builder(config)
+        benefit_fit_kwargs = {}
+        if config.ml_scope != "pooled":
+            benefit_fit_kwargs["model__sample_weight"] = _group_balanced_weights(
+                benefit_training, ("currency", "horizon")
+            )
         benefit_regressor.fit(
-            benefit_training.loc[:, columns], benefit_target.clip(lower, upper)
+            benefit_training.loc[:, columns], benefit_target.clip(lower, upper),
+            **benefit_fit_kwargs,
         )
 
-        # Every registered probability engine is trained once per family. New
-        # models can be added without changing candidate, selector or policy
-        # contracts; currency and horizon remain pooled categorical features.
-        family_models: dict[tuple[str, str], tuple[object, object | None]] = {}
-        family_versions: dict[tuple[str, str], str] = {}
+        # Every registered probability engine follows the configured scope.
+        # New models do not change candidate, selector or policy contracts.
+        family_models: dict[tuple[str, str, str | None], _ProbabilityEngine] = {}
+        family_versions: dict[tuple[str, str, str | None], str] = {}
         for model_spec in registry.ml_models:
             for family in config.target_families:
                 family_frames = []
@@ -416,51 +560,34 @@ def replay_base_engines(
                 family_training = pd.concat(family_frames, ignore_index=True)
                 if family_training["_target_value"].nunique() < 2:
                     continue
-                calibration_start = period_start - pd.DateOffset(
-                    months=config.retrain_months
-                )
-                family_dates = pd.to_datetime(family_training["available_at"])
-                family_maturity = family_dates + pd.to_timedelta(
-                    family_training["horizon"].astype(int), unit="D"
-                )
-                fit_part = family_training.loc[
-                    family_maturity.lt(calibration_start)
-                ]
-                calibration_part = family_training.loc[
-                    family_dates.ge(calibration_start)
-                    & family_maturity.lt(period_start)
-                ]
-                classifier = model_spec.builder(config)
-                calibrator = None
-                if (
-                    not fit_part.empty and not calibration_part.empty
-                    and fit_part["_target_value"].nunique() == 2
-                    and calibration_part["_target_value"].nunique() == 2
-                ):
-                    classifier.fit(
-                        fit_part.loc[:, columns], fit_part["_target_value"]
+                if config.ml_scope == "per_currency":
+                    # The hybrid model is a deterministic fallback when one
+                    # currency has insufficient mature observations/classes.
+                    scopes = [(None, family_training, "hybrid")]
+                    scopes.extend(
+                        (str(currency), rows.copy(), "per_currency")
+                        for currency, rows in family_training.groupby(
+                            "currency", sort=True
+                        )
                     )
-                    raw = np.clip(
-                        classifier.predict_proba(
-                            calibration_part.loc[:, columns]
-                        )[:, 1],
-                        1e-6, 1 - 1e-6,
-                    )
-                    log_odds = np.log(raw / (1 - raw)).reshape(-1, 1)
-                    calibrator = LogisticRegression(
-                        C=1.0, max_iter=1_000,
-                        random_state=config.random_state,
-                    ).fit(log_odds, calibration_part["_target_value"])
                 else:
-                    classifier.fit(
-                        family_training.loc[:, columns],
-                        family_training["_target_value"],
+                    scopes = [(None, family_training, config.ml_scope)]
+                for currency, training_rows, mode in scopes:
+                    fitted_model = _fit_probability_engine(
+                        training_rows,
+                        model_spec=model_spec,
+                        config=config,
+                        period_start=period_start,
+                        mode=mode,
                     )
-                key = (model_spec.name, family)
-                family_models[key] = (classifier, calibrator)
-                family_versions[key] = _version(
-                    model_spec.name, family, "all_horizons", period_start
-                )
+                    if fitted_model is None:
+                        continue
+                    key = (model_spec.name, family, currency)
+                    family_models[key] = fitted_model
+                    family_versions[key] = _version(
+                        model_spec.name, family, currency or "all_currencies",
+                        "all_horizons", config.ml_scope, period_start,
+                    )
 
         for definition, train, score in contexts:
             horizon = int(definition.horizon)
@@ -469,52 +596,73 @@ def replay_base_engines(
             expected_bps = benefit_regressor.predict(
                 score_for_model.loc[:, columns]
             )
-            baseline = float(train[definition.name].mean())
-            trained_through = pd.Timestamp(train["available_at"].max())
+            expected_bps_by_index = pd.Series(expected_bps, index=score.index)
+            pooled_baseline = float(train[definition.name].mean())
             for model_spec in registry.ml_models:
-                model_key = (model_spec.name, definition.family)
-                if model_key not in family_models:
-                    continue
-                classifier, calibrator = family_models[model_key]
-                raw_probability = classifier.predict_proba(
-                    score_for_model.loc[:, columns]
-                )[:, 1]
-                if calibrator is None:
-                    ml_probability = raw_probability
-                else:
-                    bounded = np.clip(raw_probability, 1e-6, 1 - 1e-6)
-                    ml_probability = calibrator.predict_proba(
-                        np.log(bounded / (1 - bounded)).reshape(-1, 1)
-                    )[:, 1]
-                ml_version = family_versions[model_key]
-                engine_name = (
-                    f"{model_spec.name}_{definition.family}_all_horizons"
+                score_groups = (
+                    list(score_for_model.groupby("currency", sort=True))
+                    if config.ml_scope == "per_currency"
+                    else [(None, score_for_model)]
                 )
-                candidate_frames.append(_base_candidate(
-                    score, definition=definition, engine_type="ml",
-                    engine_name=engine_name, engine_version=ml_version,
-                    confidence=ml_probability, baseline=baseline,
-                    expected_bps=expected_bps, trained_at=period_start,
-                    trained_through=trained_through,
-                ))
-                audit_rows.append({
-                    "retrain_at": period_start,
-                    "target_family": definition.family,
-                    "horizon": horizon, "engine_type": "ml",
-                    "engine_name": model_spec.name, "fitted": True,
-                    "architecture": "pooled_currency_and_horizon",
-                    "probability_calibration": (
-                        "temporal_platt_last_refit_block"
-                        if calibrator is not None else "none"
-                    ),
-                    "train_start": train["available_at"].min(),
-                    "trained_through": trained_through,
-                    "train_observations": len(train),
-                    "train_positive_rate": baseline,
-                    "score_observations": len(score),
-                    "engine_version": ml_version,
-                })
+                for currency, score_group in score_groups:
+                    currency_key = str(currency) if currency is not None else None
+                    model_key = (model_spec.name, definition.family, currency_key)
+                    if model_key not in family_models:
+                        model_key = (model_spec.name, definition.family, None)
+                    if model_key not in family_models:
+                        continue
+                    fitted_model = family_models[model_key]
+                    ml_probability = _predict_probability(fitted_model, score_group)
+                    baseline = _local_training_baseline(
+                        train,
+                        score_group,
+                        target=definition.name,
+                        prior_strength=config.rule_confidence_prior_strength,
+                    )
+                    ml_version = family_versions[model_key]
+                    engine_suffix = (
+                        f"{currency_key}_all_horizons"
+                        if currency_key is not None else "all_horizons"
+                    )
+                    engine_name = (
+                        f"{model_spec.name}_{definition.family}_{engine_suffix}"
+                    )
+                    local_train = (
+                        train.loc[train["currency"].eq(currency_key)]
+                        if currency_key is not None else train
+                    )
+                    trained_through = pd.Timestamp(local_train["available_at"].max())
+                    candidate_frames.append(_base_candidate(
+                        score_group, definition=definition, engine_type="ml",
+                        engine_name=engine_name, engine_version=ml_version,
+                        confidence=ml_probability, baseline=baseline,
+                        expected_bps=expected_bps_by_index.loc[
+                            score_group.index
+                        ].to_numpy(),
+                        trained_at=period_start,
+                        trained_through=trained_through,
+                    ))
+                    audit_rows.append({
+                        "retrain_at": period_start,
+                        "target_family": definition.family,
+                        "horizon": horizon, "engine_type": "ml",
+                        "engine_name": model_spec.name, "currency": currency_key,
+                        "fitted": True,
+                        "architecture": fitted_model.architecture,
+                        "probability_calibration": (
+                            "temporal_contextual_platt_last_refit_block"
+                            if fitted_model.calibrator is not None else "none"
+                        ),
+                        "baseline_scope": "currency_target_horizon_shrunk",
+                        "train_start": local_train["available_at"].min(),
+                        "trained_through": trained_through,
+                        "train_observations": len(local_train),
+                        "train_positive_rate": float(local_train[definition.name].mean()),
+                        "score_observations": len(score_group),
+                        "engine_version": ml_version,
+                    })
 
+            rule_trained_through = pd.Timestamp(train["available_at"].max())
             for rule_name, variants in registry.rule_library.items():
                 fitted = _fit_rule_variant(
                     train, variants, target=definition.name, horizon=horizon, config=config
@@ -536,9 +684,9 @@ def replay_base_engines(
                         fired, definition=definition, engine_type="rule",
                         engine_name=f"{rule_name}:{definition.family}:h{horizon}",
                         engine_version=rule_version,
-                        confidence=np.full(len(fired), np.nan), baseline=baseline,
+                        confidence=np.full(len(fired), np.nan), baseline=pooled_baseline,
                         expected_bps=expected_bps[prediction],
-                        trained_at=period_start, trained_through=trained_through,
+                        trained_at=period_start, trained_through=rule_trained_through,
                     ))
                 audit_rows.append({
                     "retrain_at": period_start, "target_family": definition.family,
@@ -546,7 +694,7 @@ def replay_base_engines(
                     "engine_name": rule_name, "fitted": True,
                     "selected_variant": variant.variant_id,
                     "train_start": train["available_at"].min(),
-                    "trained_through": trained_through,
+                    "trained_through": rule_trained_through,
                     "score_observations": len(score), "score_signal_count": int(prediction.sum()),
                     "engine_version": rule_version, **metrics,
                 })

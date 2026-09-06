@@ -52,3 +52,18 @@ class ThresholdSelector:
             cooldown_days=fitted.config.cooldown_days,
             max_signals_per_7d=fitted.config.max_signals_per_7d,
         )
+
+
+def build_opportunity_selector(selector_type: str = "threshold") -> OpportunitySelector:
+    """Create a selector without coupling the rest of the pipeline to its type."""
+    normalized = selector_type.strip().lower()
+    if normalized in {"threshold", "filter", "confidence_filter"}:
+        return ThresholdSelector()
+    if normalized in {"logistic_regression", "extra_trees"}:
+        # Local import avoids a selector <-> learned-selector import cycle.
+        from .learned_selector import LearnedOpportunitySelector
+
+        return LearnedOpportunitySelector(normalized)
+    raise ValueError(
+        "selector_type должен быть threshold, logistic_regression или extra_trees"
+    )

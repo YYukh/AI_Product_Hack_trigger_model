@@ -38,7 +38,11 @@ def build_evidence_matrix(candidates: pd.DataFrame) -> pd.DataFrame:
     ml = (
         candidates.loc[candidates["engine_type"].eq("ml")]
         .groupby(list(KEYS), sort=False)
-        .agg(ml_confidence=("confidence", "max"), ml_lift=("confidence_lift", "max"))
+        .agg(
+            ml_confidence=("confidence", "max"),
+            ml_lift=("confidence_lift", "max"),
+            ml_baseline_probability=("baseline_probability", "first"),
+        )
         .reset_index()
     )
     rule = (
@@ -47,6 +51,7 @@ def build_evidence_matrix(candidates: pd.DataFrame) -> pd.DataFrame:
         .agg(
             rule_confidence=("confidence", "max"),
             rule_lift=("confidence_lift", "max"),
+            rule_baseline_probability=("baseline_probability", "first"),
             rule_count=("engine_name", "nunique"),
         )
         .reset_index()
@@ -57,10 +62,16 @@ def build_evidence_matrix(candidates: pd.DataFrame) -> pd.DataFrame:
         result["baseline_probability"]
     )
     result["ml_lift"] = result["ml_lift"].fillna(1.0)
+    result["ml_baseline_probability"] = result[
+        "ml_baseline_probability"
+    ].fillna(result["baseline_probability"])
     result["rule_confidence"] = result["rule_confidence"].fillna(
         result["baseline_probability"]
     )
     result["rule_lift"] = result["rule_lift"].fillna(1.0)
+    result["rule_baseline_probability"] = result[
+        "rule_baseline_probability"
+    ].fillna(result["baseline_probability"])
     result["rule_count"] = result["rule_count"].fillna(0).astype(int)
     return result.sort_values(
         ["available_at", "currency", "target_family", "horizon"]
@@ -192,6 +203,11 @@ def aggregate_engine_evidence(
     matrix["confidence_lift"] = np.where(
         rule_wins, matrix["rule_lift"], matrix["ml_lift"]
     )
+    matrix["baseline_probability"] = np.where(
+        rule_wins,
+        matrix["rule_baseline_probability"],
+        matrix["ml_baseline_probability"],
+    )
     matrix["engine_type"] = np.where(rule_wins, "rule", "ml")
     matrix["engine_name"] = np.where(
         rule_wins, matrix["best_rule_engine"], matrix["best_ml_engine"]
@@ -224,6 +240,8 @@ def aggregate_engine_evidence(
             *KEYS, "engine_type", "engine_name", "engine_version",
             "confidence", "baseline_probability", "confidence_lift",
             "expected_bps", "target_value", "evidence_count", "rule_count",
+            "ml_confidence", "ml_lift", "rule_confidence", "rule_lift",
+            "ml_baseline_probability", "rule_baseline_probability",
             "aggregation_version",
             "statistical_evidence", "economic_evidence",
             "statistical_rank", "economic_rank", "decision_score",

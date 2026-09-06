@@ -32,20 +32,39 @@ features, targets `G0/W1` и тот же контракт финального b
 Используются две версии label:
 
 - `G0`: текущий курс является точным минимумом в окне `±h`;
-- `W1`: медианный курс в полном будущем окне `t+1...t+h` хуже текущего
-  минимум на 20 BPS. Наблюдаемый `percentile_90d` больше не зашит в label и
-  остаётся обычным признаком.
+- `W1`: в момент `t` курс находится в нижних 15% своего 90-дневного диапазона,
+  а через `h` дней становится хуже минимум на 75 BPS. Это исходное определение
+  `W1` из общего pipeline.
 
 ### Base engines
 
-- Шесть простых rule-идей являются самостоятельными интерпретируемыми
-  сигнальными моделями и baseline-источниками.
-- Параметры каждого типа правила переоцениваются на rolling train отдельно для
-  `target_family × horizon`, но pooled по валютам. Комбинации `AND/OR` и
-  архитектуры не перебираются.
+- Семь одиночных rule-семейств представляют разные экономические идеи:
+  relative cheapness, negative momentum, down streak, normalized negative
+  surprise, trend down, causal Kalman downtrend и reversal from low.
+- Четыре заранее объявленных `AND`-архетипа соединяют разные виды evidence:
+  cheapness + downward pressure, cheapness + surprise, persistent Kalman
+  downtrend и cheapness + reversal. Общего pairwise-перебора в pipeline нет.
+- `percentile`, `z-score` и distance from low являются вариантами одного
+  `relative_cheapness`, а не тремя независимыми подтверждениями.
+- Параметры каждого семейства переоцениваются на rolling train отдельно для
+  `target_family × horizon`, но pooled по валютам. Используется 159 заранее
+  ограниченных вариантов вместо полного discovery-grid.
 - Два небольших pooled ML-классификатора — по одному для `G0` и `W1`.
   Валюта и горизонт входят как категориальные признаки, поэтому число моделей
-  не растёт как `currency × target × horizon`.
+  не растёт как `currency × target × horizon`. Это основной режим
+  `ml_scope='pooled'`.
+- ML использует тот же компактный feature space плюс четыре causal-признака,
+  прошедшие смысловой отбор: Kalman level gap, Kalman trend, Kalman reversal и
+  normalized return surprise. Остальные experimental features не перенесены.
+- Для проверки межвалютной неоднородности доступны два совместимых режима без
+  изменения candidate-контракта, selector, policy и отчётов:
+  `hybrid` (общая модель, равный вес `currency × horizon`, контекстная temporal
+  calibration) и `per_currency` (по модели на валюту и family, но горизонты
+  остаются pooled; общая модель служит fallback при нехватке данных).
+- Для всех режимов `confidence_lift` ML сравнивает вероятность не с общей
+  частотой класса, а со сглаженной train-частотой той же валюты для конкретных
+  `family × horizon`. Поэтому различия базовой частоты KGS и других валют не
+  маскируются общей pooled baseline.
 - Одна pooled-регрессия оценивает ожидаемый BPS-uplift относительно случайного
   входа той же валюты и горизонта.
 - Все движки переобучаются каждые шесть месяцев на последних 36 месяцах.
@@ -62,10 +81,11 @@ features, targets `G0/W1` и тот же контракт финального b
   история выпадает из шкалы, а будущие наблюдения не читаются.
 - Длинный горизонт удаляется лишь при строгом Pareto-доминировании более
   быстрым кандидатом одновременно по статистическому и экономическому evidence.
-- `ThresholdSelector` — простой прозрачный default. Он имеет единый набор
-  условий для всех валют, targets и горизонтов. Интерфейс `OpportunitySelector`
-  позволяет заменить его моделью команды без изменения engines, policy и
-  backtest.
+- `ThresholdSelector` — простой прозрачный default. `LearnedOpportunitySelector`
+  поддерживает `logistic_regression` и `extra_trees`, не меняя engines, policy,
+  holdout или формат отчётов. У learned-варианта pre-holdout история строго
+  разделена на fit модели, отдельную калибровку вероятности и validation порога;
+  после этого и модель, и calibrator, и порог заморожены.
 - `SignalPolicyConfig` не обучается: он применяет cooldown и rolling hard cap.
   Это продуктовые ограничения, а не способ улучшить качество на holdout.
 
@@ -106,6 +126,19 @@ Base engines продолжают планово переобучаться вн
 тонким runner: подготовка данных, один вызов pipeline, audit, отчёты и графики.
 Тяжёлая логика находится в `research/yura/src`.
 
+Для отбора новых сигналов отдельно предназначен
+`notebooks/indicator_discovery.ipynb`. Это исследовательский стенд, который не
+меняет продуктовый pipeline: на единой walk-forward-схеме он сравнивает четыре
+исходные target-концепции (`G0`, `G1`, `W0`, `W1`), одиночные правила,
+train-only отобранные `AND`/`OR`-комбинации и компактные ML-модели-индикаторы.
+Период после discovery OOS зарезервирован и не участвует в выборе. Основные
+результаты — `indicator_leaderboard`, `best_indicators`,
+`indicator_family_summary` и fold-level таблица `all_discovery_folds`.
+Исторический выполненный снимок, ещё содержащий сравнение с удалённым
+`W1_YURA`, сохранён в `reports/indicator_discovery_results.html`, а его
+интерпретация — в `reports/indicator_discovery_findings.md`; для просмотра
+архивного результата notebook повторно запускать не нужно.
+
 Новый простой индикатор добавляется как набор вариантов в `RULE_LIBRARY`.
 Новая вероятностная модель добавляется именованным `MLModelSpec` в
 `EngineRegistry`; она автоматически проходит тот же causal WF и выдаёт тот же
@@ -114,6 +147,16 @@ candidate-контракт.
 `fit`, `select` и `policy_config`, после чего передаётся в
 `run_yura_pipeline(..., selector=my_selector)`. Формат итоговой таблицы при этом
 не меняется.
+
+В notebook selector выбирается одной строкой:
+`SELECTOR_TYPE = 'threshold'`, `'logistic_regression'` или `'extra_trees'`.
+Для ML-вариантов `confidence` — temporally calibrated вероятность целевого
+события; `ExtraTrees.predict_proba` напрямую как confidence не используется.
+
+Архитектура base ML выбирается независимо строкой `ML_SCOPE = 'pooled'`,
+`'hybrid'` или `'per_currency'`. Менять валютные threshold вручную не нужно:
+различия валют учитываются моделью/калибровкой и локальной causal baseline, а
+финальный лимит остаётся единым и применяется отдельно по каждой валюте.
 
 Для прямого сравнения рассчитанных таблиц используйте
 `compare_backtest_summaries(current_summary, yura_summary)`.

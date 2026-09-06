@@ -50,6 +50,19 @@ class YuraPipelineResult:
         return records.to_dict(orient="records")
 
 
+@dataclass
+class PreparedYuraPipeline:
+    """Selector-independent base replay for one ML scope."""
+
+    config: YuraPipelineConfig
+    temporal_plan: TemporalPlan
+    base_replay: BaseReplayResult
+    evidence: EvidenceResult
+    engine_registry: EngineRegistry
+    selected_target_registry: pd.DataFrame
+    evaluation_universe: pd.DataFrame
+
+
 def _rule_baselines(candidates: pd.DataFrame, start: pd.Timestamp) -> pd.DataFrame:
     rows = candidates.loc[
         candidates["engine_type"].eq("rule")
@@ -164,15 +177,14 @@ def _assert_policy_cap(events: pd.DataFrame, maximum: int) -> None:
                 raise AssertionError("Policy violated max_signals_per_7d")
 
 
-def run_yura_pipeline(
+def prepare_yura_pipeline(
     scoring_data: pd.DataFrame,
     *,
     target_registry: pd.DataFrame,
     config: YuraPipelineConfig = YuraPipelineConfig(),
     engine_registry: EngineRegistry | None = None,
-    selector: OpportunitySelector | None = None,
-) -> YuraPipelineResult:
-    """Run base WF, validation-only selection and one untouched holdout."""
+) -> PreparedYuraPipeline:
+    """Run the expensive selector-independent walk-forward stage once."""
     temporal_plan = TemporalPlan.from_data(scoring_data, config)
     runtime_config = temporal_plan.resolve(config)
     engines = engine_registry or default_engine_registry()
@@ -191,7 +203,34 @@ def run_yura_pipeline(
         currencies=runtime_config.currencies,
         start_date=runtime_config.base_oos_start,
     )
+    return PreparedYuraPipeline(
+        config=runtime_config,
+        temporal_plan=temporal_plan,
+        base_replay=base_replay,
+        evidence=evidence,
+        engine_registry=engines,
+        selected_target_registry=selected_registry,
+        evaluation_universe=all_universe,
+    )
+
+
+def run_prepared_yura_pipeline(
+    prepared: PreparedYuraPipeline,
+    scoring_data: pd.DataFrame,
+    *,
+    selector: OpportunitySelector | None = None,
+) -> YuraPipelineResult:
+    """Fit and evaluate one selector on a shared prepared base replay."""
+    runtime_config = prepared.config
+    temporal_plan = prepared.temporal_plan
+    base_replay = prepared.base_replay
+    evidence = prepared.evidence
+    engines = prepared.engine_registry
+    selected_registry = prepared.selected_target_registry
+    action_candidates = evidence.opportunities
+    all_universe = prepared.evaluation_universe
     selector_impl = selector or ThresholdSelector()
+    selector_name = getattr(selector_impl, "selector_name", type(selector_impl).__name__)
     fitted_arbiter, leaderboard = selector_impl.fit(
         action_candidates,
         evaluation_universe=all_universe,
@@ -202,8 +241,10 @@ def run_yura_pipeline(
         pd.to_datetime(action_candidates["available_at"]).ge(holdout_start)
     ].copy()
     selected_holdout = selector_impl.select(holdout_candidates, fitted_arbiter)
-    selected_holdout["selector_name"] = type(selector_impl).__name__
-    selected_holdout["selector_fitted_through"] = holdout_start
+    selected_holdout["selector_name"] = selector_name
+    selected_holdout["selector_fitted_through"] = getattr(
+        fitted_arbiter, "trained_through", holdout_start
+    )
     policy_config = selector_impl.policy_config(fitted_arbiter)
     selected_holdout["policy_cooldown_days"] = policy_config.cooldown_days
     selected_holdout["policy_max_signals_per_7d"] = policy_config.max_signals_per_7d
@@ -237,7 +278,7 @@ def run_yura_pipeline(
         evidence=evidence,
         engine_registry=engines,
         fitted_arbiter=fitted_arbiter,
-        selector_name=type(selector_impl).__name__,
+        selector_name=selector_name,
         arbiter_leaderboard=leaderboard,
         final_signals=final_signals,
         backtest_summary=summary,
@@ -248,4 +289,26 @@ def run_yura_pipeline(
         action_candidates=action_candidates,
         holdout_coverage=_coverage_report(final_signals),
         holdout_quarterly_stability=_quarterly_report(rows),
+    )
+
+
+def run_yura_pipeline(
+    scoring_data: pd.DataFrame,
+    *,
+    target_registry: pd.DataFrame,
+    config: YuraPipelineConfig = YuraPipelineConfig(),
+    engine_registry: EngineRegistry | None = None,
+    selector: OpportunitySelector | None = None,
+) -> YuraPipelineResult:
+    """Run base WF, validation-only selection and one untouched holdout."""
+    prepared = prepare_yura_pipeline(
+        scoring_data,
+        target_registry=target_registry,
+        config=config,
+        engine_registry=engine_registry,
+    )
+    return run_prepared_yura_pipeline(
+        prepared,
+        scoring_data,
+        selector=selector,
     )

@@ -12,39 +12,25 @@ def _nullable_binary(condition: pd.Series, valid: pd.Series) -> pd.Series:
     return target
 
 
-def _strict_future_median(series: pd.Series, horizon: int) -> pd.Series:
-    """Median of t+1...t+h; the current observation is deliberately absent."""
-    shifted = series.shift(-1)
-    return (
-        shifted.iloc[::-1]
-        .rolling(horizon, min_periods=horizon)
-        .median()
-        .iloc[::-1]
-    )
-
-
 def build_yura_targets(
     outcomes: pd.DataFrame,
     *,
     horizons: tuple[int, ...],
-    w1_forward_bps: float,
+    w1_deterioration_bps: float = 75.0,
+    w1_low_percentile: float = 0.15,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Build strict local-minimum G0 and forward-window deterioration W1.
-
-    W1 is intentionally not conditioned on an observable percentile feature.
-    It asks whether acting now beats the median rate over the complete future
-    window. Current cheapness remains available to rule/ML engines as evidence.
-    """
-    required = {"available_at", "currency", "rate"}
+    """Build G0 and the original low-zone-then-deterioration W1 target."""
+    required = {"available_at", "currency", "rate", "percentile_90d"}
     if missing := required.difference(outcomes.columns):
         raise KeyError(f"Не хватает полей для Yura targets: {sorted(missing)}")
-    if w1_forward_bps < 0:
-        raise ValueError("w1_forward_bps не может быть отрицательным")
+    if w1_deterioration_bps < 0:
+        raise ValueError("w1_deterioration_bps не может быть отрицательным")
+    if not 0.0 <= w1_low_percentile <= 1.0:
+        raise ValueError("w1_low_percentile должен лежать в [0, 1]")
 
     result = outcomes.copy().sort_values(
         ["currency", "available_at"]
     ).reset_index(drop=True)
-    grouped = result.groupby("currency", sort=False)["rate"]
     definitions: list[dict] = []
 
     for horizon in horizons:
@@ -70,31 +56,31 @@ def build_yura_targets(
             "threshold_bps": np.nan,
         })
 
-        future_median = grouped.transform(
-            lambda values: _strict_future_median(values, int(horizon))
-        )
-        forward_advantage = (
-            (future_median / result["rate"] - 1.0) * 10_000.0
-        )
-        result[f"future_median_rate_{horizon}d"] = future_median
-        result[f"forward_median_advantage_{horizon}d_bps"] = forward_advantage
-        threshold_label = str(float(w1_forward_bps)).replace(".", "p")
+        future_return = f"future_return_{horizon}d_bps"
+        if future_return not in result:
+            raise KeyError(f"Не хватает outcome {future_return!r}")
+        threshold_label = f"{float(w1_deterioration_bps):g}".replace(".", "p")
+        percentile_label = f"{float(w1_low_percentile):g}".replace(".", "p")
         w1_name = (
-            f"target_w1_forward_median_ge_{threshold_label}bps_h{horizon}d"
+            f"target_w1_lowpct_{percentile_label}_"
+            f"deterioration_{threshold_label}bps_h{horizon}d"
         )
-        w1_valid = forward_advantage.notna()
+        w1_valid = result[future_return].notna() & result["percentile_90d"].notna()
+        w1_condition = (
+            result["percentile_90d"].le(w1_low_percentile)
+            & result[future_return].gt(w1_deterioration_bps)
+        )
         result[w1_name] = _nullable_binary(
-            forward_advantage.ge(w1_forward_bps), w1_valid
+            w1_condition, w1_valid
         )
         definitions.append({
             "name": w1_name,
             "family": "W1",
             "scenario": "WINDOW_CLOSING",
             "horizon": int(horizon),
-            "description": (
-                "Median rate over t+1...t+h is worse than today's rate"
-            ),
-            "threshold_bps": float(w1_forward_bps),
+            "description": "Currently in the low zone and worse after h days",
+            "threshold_bps": float(w1_deterioration_bps),
+            "low_percentile": float(w1_low_percentile),
         })
 
     result = result.sort_values(
