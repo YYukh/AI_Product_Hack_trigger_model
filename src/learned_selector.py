@@ -19,7 +19,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-from src.signal_backtest import backtest_signal_stream
+from .signal_backtest import backtest_signal_stream
 
 from .arbiter import (
     _collapse_evidence,

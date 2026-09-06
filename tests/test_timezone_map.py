@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from research.yura.src.client_simulation import RUSSIAN_TIME_ZONES
-from research.yura.src.timezone_map import (
+from src.client_simulation import RUSSIAN_TIME_ZONES
+from src.timezone_map import (
     SUBJECT_TIMEZONE, build_subject_lift_table, build_subject_savings_table,
 )
 

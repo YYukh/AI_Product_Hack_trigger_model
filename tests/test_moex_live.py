@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from research.yura.src.moex_live import (
+from src.moex_live import (
     check_signal_relevance,
     evaluate_signal_relevance,
     stamp_signals_with_moex_reference,

@@ -9,7 +9,7 @@ import hashlib
 import numpy as np
 import pandas as pd
 
-from src.signal_backtest import backtest_signal_stream
+from .signal_backtest import backtest_signal_stream
 
 from .config import YuraPipelineConfig
 from .engines import KEYS

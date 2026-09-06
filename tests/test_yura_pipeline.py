@@ -8,32 +8,32 @@ from unittest.mock import patch
 import pandas as pd
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from research.yura.src.arbiter import (
+from src.arbiter import (
     ArbiterConfig, _remove_horizon_dominance, run_arbiter,
 )
-from research.yura.src import benchmark as benchmark_module
-from research.yura.src.config import YuraPipelineConfig
-from research.yura.src.engines import (
+from src import benchmark as benchmark_module
+from src.config import YuraPipelineConfig
+from src.engines import (
     _group_balanced_weights, _local_training_baseline,
     _target_definitions, _train_slice,
 )
-from research.yura.src.evidence import (
+from src.evidence import (
     _rolling_percentile_rank, add_causal_relative_scores,
     aggregate_engine_evidence,
 )
-from research.yura.src.learned_selector import (
+from src.learned_selector import (
     LearnedOpportunitySelector, _mature_slice, _selector_periods,
 )
-from research.yura.src.rules import (
+from src.rules import (
     RULE_LIBRARY, CompositeRuleVariant, RuleVariant,
 )
-from research.yura.src.selector import ThresholdSelector, build_opportunity_selector
-from research.yura.src.targets import build_yura_targets
-from research.yura.src.temporal import TemporalPlan
+from src.selector import ThresholdSelector, build_opportunity_selector
+from src.targets import build_yura_targets
+from src.temporal import TemporalPlan
 
 
 class RuleTests(unittest.TestCase):
