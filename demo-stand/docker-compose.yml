@@ -1,0 +1,52 @@
+name: fx-trigger-stand
+
+services:
+  proxy:
+    image: caddy:2.8-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+      - api
+
+  web:
+    build: ./web
+    restart: unless-stopped
+    expose:
+      - "80"
+
+  api:
+    build: ./api
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      ML_URL: ${ML_URL:-}
+      ML_TIMEOUT_S: ${ML_TIMEOUT_S:-2}
+      DRIFT_THRESHOLD_BP: ${DRIFT_THRESHOLD_BP:-20}
+      PUSH_TTL_MINUTES: ${PUSH_TTL_MINUTES:-1440}
+      PUSH_BUDGET_MONTH: ${PUSH_BUDGET_MONTH:-8}
+      PUSH_COOLDOWN_DAYS: ${PUSH_COOLDOWN_DAYS:-3}
+      FEATURE_RESERVE: ${FEATURE_RESERVE:-true}
+      FEATURE_RECIPIENT_LIMIT: ${FEATURE_RECIPIENT_LIMIT:-true}
+      RESERVE_TTL_DAYS: ${RESERVE_TTL_DAYS:-7}
+      RESERVE_PERCENTILE: ${RESERVE_PERCENTILE:-25}
+      RESERVE_WINDOW_DAYS: ${RESERVE_WINDOW_DAYS:-30}
+    volumes:
+      - ./data:/data:ro
+      - ./logs:/logs
+
+  # Рабочие ML-сервисы (парсер котировок, модель выгодного момента, модель
+  # «какой сигнал в пуш») живут в оверлее docker-compose.ml.yml:
+  #   docker compose -f docker-compose.yml -f docker-compose.ml.yml --profile ml up --build
+  # Без оверлея стенд работает автономно на data/signals.json.
+
+volumes:
+  caddy_data:
+  caddy_config:

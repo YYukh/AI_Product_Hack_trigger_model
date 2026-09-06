@@ -1,0 +1,17 @@
+.env
+logs/*.jsonl
+__pycache__/
+*.pyc
+web/node_modules/
+web/dist/
+web/*.tsbuildinfo
+.DS_Store
+
+# ML: локальный кэш прогрева (том mldata живёт в docker volume, но на всякий случай)
+mldata/
+ml/**/__pycache__/
+# синтетические бэкапы, которые пишет ml-warmup
+data/rates.synthetic.csv
+data/signals.synthetic.json
+data/scenarios.synthetic.json
+data/signals.ml.json

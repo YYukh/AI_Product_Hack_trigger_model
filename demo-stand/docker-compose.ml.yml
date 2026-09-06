@@ -1,0 +1,104 @@
+# Оверлей: рабочие ML-сервисы из ml/upstream (вендорённый снимок кода ML-команды)
+# + подключение к стенду.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.ml.yml --profile ml up --build
+#
+# ВСЕГДА с --profile ml (иначе api ссылается на несуществующие сервисы).
+#
+# ml-warmup один раз прогоняет полный production-конвейер (курсы ЦБ → признаки →
+# walk-forward replay движков → метамодель → частотная политика) и кладёт
+# артефакты в том mldata. Первый прогон долгий (полный replay с 2020 ≈ 8–15 мин),
+# дальше — мгновенно (артефакты кэшируются в томе).
+
+x-mlbuild: &mlbuild
+  context: ./ml
+
+x-healthcheck: &hc
+  test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://localhost:8000/health',timeout=3).status==200 else sys.exit(1)"]
+  interval: 5s
+  timeout: 4s
+  retries: 40
+  start_period: 5s
+
+services:
+  ml-warmup:
+    profiles: ["ml"]
+    build:
+      <<: *mlbuild
+      dockerfile: warmup/Dockerfile
+    restart: "no"
+    environment:
+      ML_REPLAY_FROM: ${ML_REPLAY_FROM:-2020-01-01}
+      ML_DATA_FROM: ${ML_DATA_FROM:-2020-01-01}
+      CBR_PREFER: ${CBR_PREFER:-auto}
+      ML_WARMUP_FORCE: ${ML_WARMUP_FORCE:-false}
+    volumes:
+      - ml_data:/mldata
+      - ./data:/data
+
+  parser:
+    profiles: ["ml"]
+    build:
+      <<: *mlbuild
+      dockerfile: parser/Dockerfile
+    restart: unless-stopped
+    environment:
+      CBR_PREFER: ${CBR_PREFER:-auto}
+    expose:
+      - "8000"
+    volumes:
+      - ml_data:/mldata:ro
+    healthcheck: *hc
+    depends_on:
+      ml-warmup:
+        condition: service_completed_successfully
+
+  moment-model:
+    profiles: ["ml"]
+    build:
+      <<: *mlbuild
+      dockerfile: moment_model/Dockerfile
+    restart: unless-stopped
+    expose:
+      - "8000"
+    volumes:
+      - ml_data:/mldata:ro
+    healthcheck: *hc
+    depends_on:
+      ml-warmup:
+        condition: service_completed_successfully
+
+  push-model:
+    profiles: ["ml"]
+    build:
+      <<: *mlbuild
+      dockerfile: push_model/Dockerfile
+    restart: unless-stopped
+    expose:
+      - "8000"
+    volumes:
+      - ml_data:/mldata:ro
+    healthcheck: *hc
+    depends_on:
+      ml-warmup:
+        condition: service_completed_successfully
+
+  # Стенд ходит в ML-сервисы (курсы — в парсер, сигналы — в модель пуша, сырые
+  # движки — в модель момента). При недоступности любого — молчаливый откат на
+  # файлы data/*, факт отката виден в /api/health.
+  api:
+    environment:
+      ML_URL: http://push-model:8000
+      RATES_URL: http://parser:8000
+      MOMENT_URL: http://moment-model:8000
+      ML_TIMEOUT_S: ${ML_TIMEOUT_S:-4}
+    depends_on:
+      parser:
+        condition: service_healthy
+      moment-model:
+        condition: service_healthy
+      push-model:
+        condition: service_healthy
+
+volumes:
+  ml_data:

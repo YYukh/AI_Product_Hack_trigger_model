@@ -1,0 +1,2563 @@
+{
+  "args": {
+    "n": 10000,
+    "months": 12,
+    "seed": 20260903,
+    "api_check": 60,
+    "out": "simulation-stats"
+  },
+  "parity": {
+    "checks": 180,
+    "matched": 180,
+    "mismatched": 0,
+    "details": []
+  },
+  "weights_used": {
+    "P1_oybek": 0.35,
+    "P2_daler": 0.3,
+    "P3_ainura": 0.15,
+    "P4_ashot": 0.05,
+    "P5_farrukh": 0.15
+  },
+  "results": {
+    "conservative": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5938672195.310693,
+        "flowB_events": 79270.0,
+        "base_flowB_volume_rub": 2245918146.0794706,
+        "feat_flowB_volume_rub": 2295961571.9525704,
+        "push_sent": 43885.0,
+        "user_save_signal_rub": 13965988.25982421,
+        "user_save_events": 39907.0,
+        "user_save_positive_noorder": 29322.0,
+        "user_save_positive_order": 29504.0,
+        "base_switch_volume_rub": 38094444.38123125,
+        "eff_retained_volume_rub": 28851738.06962484,
+        "eff_retained_sends": 1112.0,
+        "user_save_reserve_rub": 354826.72844918724,
+        "user_save_reserve_n": 1202.0,
+        "timing_shift_events": 788.0,
+        "timing_shift_volume_rub": 20808125.3141622,
+        "eff_recovered_volume_rub": 11158157.450722316,
+        "eff_recovered_sends": 373.0
+      },
+      "per_portrait": {
+        "P3_ainura": {
+          "flowA_volume_rub": 1529411790.0181742,
+          "flowA_remit_rub": 839632181.3613734,
+          "flowB_events": 16711.0,
+          "state_NEUTRAL": 4695.0,
+          "base_flowB_volume_rub": 432330520.20811677,
+          "feat_flowB_volume_rub": 439558110.70923716,
+          "state_OK": 12016.0,
+          "user_save_signal_rub": 2443763.699699041,
+          "user_save_events": 8880.0,
+          "user_save_reserve_rub": 20302.121966491442
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 3816628221.036061,
+          "flowA_remit_rub": 2078216063.6320136,
+          "flowB_events": 26552.0,
+          "state_OK": 18816.0,
+          "base_flowB_volume_rub": 530051499.82460046,
+          "feat_flowB_volume_rub": 538585051.5190905,
+          "user_save_signal_rub": 2131248.9240770354,
+          "user_save_events": 14040.0,
+          "state_NEUTRAL": 7736.0,
+          "user_save_reserve_rub": 29917.62492573495
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1583016995.778092,
+          "flowA_remit_rub": 881560734.1189518,
+          "flowB_events": 5861.0,
+          "state_OK": 4198.0,
+          "base_flowB_volume_rub": 395013668.47810996,
+          "feat_flowB_volume_rub": 406327275.15853757,
+          "user_save_signal_rub": 1581764.1252644854,
+          "user_save_events": 3265.0,
+          "state_NEUTRAL": 1662.0,
+          "user_save_reserve_rub": 77910.90612003095,
+          "state_DRIFT": 1.0,
+          "eff_retained_volume_rub": 33601.74797633332
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 3405978996.644114,
+          "flowA_remit_rub": 1841194309.2530482,
+          "flowB_events": 27908.0,
+          "state_OK": 13688.0,
+          "base_flowB_volume_rub": 605598238.6042918,
+          "feat_flowB_volume_rub": 624782613.3746641,
+          "user_save_signal_rub": 5381120.03484068,
+          "user_save_events": 12640.0,
+          "state_DRIFT": 4330.0,
+          "state_NEUTRAL": 9659.0,
+          "state_BETTER": 231.0,
+          "eff_retained_volume_rub": 28522563.729129706,
+          "user_save_reserve_rub": 191505.0674766886
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 543062206.8054796,
+          "flowA_remit_rub": 298068906.94530386,
+          "flowB_events": 2238.0,
+          "state_NEUTRAL": 856.0,
+          "base_flowB_volume_rub": 282924218.96436983,
+          "feat_flowB_volume_rub": 286708521.1910553,
+          "state_OK": 1364.0,
+          "user_save_signal_rub": 2428091.475942858,
+          "user_save_events": 1082.0,
+          "state_DRIFT": 17.0,
+          "state_BETTER": 1.0,
+          "user_save_reserve_rub": 35191.0079602413,
+          "eff_retained_volume_rub": 295572.59251879394
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 24608,
+        "OK": 50082,
+        "DRIFT": 4348,
+        "BETTER": 232
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 21068,
+        "base:NEUTRAL:transfer": 22089,
+        "feat:OK:transfer": 46589,
+        "base:OK:transfer": 45079,
+        "feat:OK:abandon": 3493,
+        "base:OK:abandon": 5003,
+        "feat:NEUTRAL:abandon": 2750,
+        "base:NEUTRAL:abandon": 2519,
+        "feat:NEUTRAL:reserve": 790,
+        "feat:NEUTRAL:reserve->EXPIRED": 557,
+        "feat:DRIFT:abandon": 776,
+        "base:DRIFT:transfer_bad": 2585,
+        "feat:BETTER:transfer": 214,
+        "base:BETTER:transfer": 206,
+        "feat:DRIFT:transfer": 1975,
+        "base:DRIFT:switch_informal": 1483,
+        "base:DRIFT:abandon": 280,
+        "feat:DRIFT:reserve": 1226,
+        "feat:DRIFT:reserve->EXECUTED": 969,
+        "feat:DRIFT:reserve->EXPIRED": 257,
+        "feat:NEUTRAL:reserve->EXECUTED": 233,
+        "feat:DRIFT:switch_informal": 371,
+        "feat:BETTER:abandon": 18,
+        "base:BETTER:abandon": 26
+      },
+      "reserve_out": {
+        "NEUTRAL:EXPIRED": 557,
+        "DRIFT:EXECUTED": 969,
+        "DRIFT:EXPIRED": 257,
+        "NEUTRAL:EXECUTED": 233
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 969,
+          "wait_median": 1,
+          "gain_median": 0.0,
+          "gain_mean": 55.9,
+          "gain_share_positive": 0.34
+        },
+        "NEUTRAL": {
+          "executed": 233,
+          "wait_median": 4,
+          "gain_median": 258.2,
+          "gain_mean": 221.1,
+          "gain_share_positive": 0.88
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 8318
+      }
+    },
+    "central": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5938672195.310693,
+        "flowB_events": 79270.0,
+        "base_flowB_volume_rub": 2283900376.057572,
+        "feat_flowB_volume_rub": 2372672919.468897,
+        "push_sent": 43885.0,
+        "user_save_signal_rub": 14443093.851962129,
+        "user_save_events": 41131.0,
+        "user_save_positive_noorder": 30290.0,
+        "user_save_positive_order": 30472.0,
+        "user_save_reserve_rub": 502693.9091975404,
+        "user_save_reserve_n": 1499.0,
+        "timing_shift_events": 733.0,
+        "timing_shift_volume_rub": 19300253.332164988,
+        "base_switch_volume_rub": 49647837.01404727,
+        "eff_retained_volume_rub": 42160863.40615103,
+        "eff_retained_sends": 1631.0,
+        "eff_recovered_volume_rub": 18953628.547370538,
+        "eff_recovered_sends": 628.0
+      },
+      "per_portrait": {
+        "P3_ainura": {
+          "flowA_volume_rub": 1529411790.0181742,
+          "flowA_remit_rub": 839632181.3613734,
+          "flowB_events": 16711.0,
+          "state_NEUTRAL": 4695.0,
+          "base_flowB_volume_rub": 442130283.61380595,
+          "feat_flowB_volume_rub": 451318806.3767482,
+          "state_OK": 12016.0,
+          "user_save_signal_rub": 2488111.7199423355,
+          "user_save_events": 9054.0,
+          "user_save_reserve_rub": 33890.25384676253
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 3816628221.036061,
+          "flowA_remit_rub": 2078216063.6320136,
+          "flowB_events": 26552.0,
+          "state_OK": 18816.0,
+          "base_flowB_volume_rub": 542004511.2313777,
+          "feat_flowB_volume_rub": 554616543.5315332,
+          "user_save_signal_rub": 2176754.4732411834,
+          "user_save_events": 14347.0,
+          "state_NEUTRAL": 7736.0,
+          "user_save_reserve_rub": 63559.92343513212
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1583016995.778092,
+          "flowA_remit_rub": 881560734.1189518,
+          "flowB_events": 5861.0,
+          "state_OK": 4198.0,
+          "base_flowB_volume_rub": 403928460.1066042,
+          "feat_flowB_volume_rub": 418717286.68838066,
+          "user_save_signal_rub": 1630879.7053486733,
+          "user_save_events": 3337.0,
+          "state_NEUTRAL": 1662.0,
+          "user_save_reserve_rub": 112930.49729538999,
+          "state_DRIFT": 1.0,
+          "eff_retained_volume_rub": 33601.74797633332
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 3405978996.644114,
+          "flowA_remit_rub": 1841194309.2530482,
+          "flowB_events": 27908.0,
+          "state_OK": 13688.0,
+          "base_flowB_volume_rub": 607248157.8996055,
+          "feat_flowB_volume_rub": 652769623.4515853,
+          "user_save_signal_rub": 5654305.24737025,
+          "user_save_events": 13289.0,
+          "state_DRIFT": 4330.0,
+          "user_save_reserve_rub": 229193.92429191616,
+          "state_NEUTRAL": 9659.0,
+          "state_BETTER": 231.0,
+          "eff_retained_volume_rub": 41590323.427901216
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 543062206.8054796,
+          "flowA_remit_rub": 298068906.94530386,
+          "flowB_events": 2238.0,
+          "state_NEUTRAL": 856.0,
+          "base_flowB_volume_rub": 288588963.20619386,
+          "feat_flowB_volume_rub": 295250659.4206436,
+          "state_OK": 1364.0,
+          "user_save_signal_rub": 2493042.7060595783,
+          "user_save_events": 1104.0,
+          "state_DRIFT": 17.0,
+          "state_BETTER": 1.0,
+          "user_save_reserve_rub": 63119.31032834038,
+          "eff_retained_volume_rub": 536938.2302735004
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 24608,
+        "OK": 50082,
+        "DRIFT": 4348,
+        "BETTER": 232
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 21579,
+        "base:NEUTRAL:transfer": 22569,
+        "feat:OK:transfer": 47609,
+        "base:OK:transfer": 46107,
+        "feat:OK:abandon": 2473,
+        "base:OK:abandon": 3975,
+        "feat:NEUTRAL:abandon": 1592,
+        "base:NEUTRAL:abandon": 2039,
+        "feat:DRIFT:reserve": 1342,
+        "base:DRIFT:transfer_bad": 2174,
+        "feat:DRIFT:reserve->EXECUTED": 1064,
+        "feat:BETTER:transfer": 221,
+        "base:BETTER:transfer": 212,
+        "feat:NEUTRAL:reserve": 1437,
+        "feat:NEUTRAL:reserve->EXPIRED": 1002,
+        "base:DRIFT:switch_informal": 1932,
+        "feat:DRIFT:transfer": 2294,
+        "feat:DRIFT:abandon": 411,
+        "base:DRIFT:abandon": 242,
+        "feat:DRIFT:reserve->EXPIRED": 278,
+        "feat:NEUTRAL:reserve->EXECUTED": 435,
+        "feat:DRIFT:switch_informal": 301,
+        "base:BETTER:abandon": 20,
+        "feat:BETTER:abandon": 11
+      },
+      "reserve_out": {
+        "DRIFT:EXECUTED": 1064,
+        "NEUTRAL:EXPIRED": 1002,
+        "DRIFT:EXPIRED": 278,
+        "NEUTRAL:EXECUTED": 435
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 1064,
+          "wait_median": 1.0,
+          "gain_median": 0.0,
+          "gain_mean": 50.1,
+          "gain_share_positive": 0.32
+        },
+        "NEUTRAL": {
+          "executed": 435,
+          "wait_median": 4,
+          "gain_median": 265.3,
+          "gain_mean": 218.1,
+          "gain_share_positive": 0.86
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 8318
+      }
+    },
+    "optimistic": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5938672195.310693,
+        "flowB_events": 79270.0,
+        "base_flowB_volume_rub": 2296039716.6078644,
+        "feat_flowB_volume_rub": 2436493902.711383,
+        "push_sent": 43885.0,
+        "user_save_signal_rub": 14723654.955283474,
+        "user_save_events": 41945.0,
+        "user_save_positive_noorder": 30932.0,
+        "user_save_positive_order": 31123.0,
+        "user_save_reserve_rub": 752399.9326143241,
+        "user_save_reserve_n": 1854.0,
+        "timing_shift_events": 570.0,
+        "timing_shift_volume_rub": 15167590.287486719,
+        "base_switch_volume_rub": 61974373.62651409,
+        "eff_retained_volume_rub": 58239626.635145836,
+        "eff_retained_sends": 2258.0,
+        "eff_recovered_volume_rub": 35476141.39591171,
+        "eff_recovered_sends": 1209.0
+      },
+      "per_portrait": {
+        "P3_ainura": {
+          "flowA_volume_rub": 1529411790.0181742,
+          "flowA_remit_rub": 839632181.3613734,
+          "flowB_events": 16711.0,
+          "state_NEUTRAL": 4695.0,
+          "base_flowB_volume_rub": 447334868.8454661,
+          "feat_flowB_volume_rub": 459611432.0103082,
+          "state_OK": 12016.0,
+          "user_save_signal_rub": 2512903.133796246,
+          "user_save_events": 9147.0,
+          "user_save_reserve_rub": 46612.18140091323
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 3816628221.036061,
+          "flowA_remit_rub": 2078216063.6320136,
+          "flowB_events": 26552.0,
+          "state_OK": 18816.0,
+          "base_flowB_volume_rub": 547089288.6476485,
+          "feat_flowB_volume_rub": 568669741.9306661,
+          "user_save_signal_rub": 2200862.9194945865,
+          "user_save_events": 14488.0,
+          "state_NEUTRAL": 7736.0,
+          "user_save_reserve_rub": 133490.90308544922
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1583016995.778092,
+          "flowA_remit_rub": 881560734.1189518,
+          "flowB_events": 5861.0,
+          "state_OK": 4198.0,
+          "base_flowB_volume_rub": 408096958.08588225,
+          "feat_flowB_volume_rub": 424161268.86622137,
+          "user_save_signal_rub": 1637450.6185069606,
+          "user_save_events": 3380.0,
+          "state_NEUTRAL": 1662.0,
+          "user_save_reserve_rub": 98405.42501477523,
+          "state_DRIFT": 1.0,
+          "eff_retained_volume_rub": 33601.74797633332
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 3405978996.644114,
+          "flowA_remit_rub": 1841194309.2530482,
+          "flowB_events": 27908.0,
+          "state_OK": 13688.0,
+          "base_flowB_volume_rub": 602130929.7125903,
+          "feat_flowB_volume_rub": 680121670.1006473,
+          "user_save_signal_rub": 5860681.925289551,
+          "user_save_events": 13814.0,
+          "state_DRIFT": 4330.0,
+          "user_save_reserve_rub": 315850.8340303856,
+          "state_NEUTRAL": 9659.0,
+          "state_BETTER": 231.0,
+          "eff_retained_volume_rub": 57549941.25178965
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 543062206.8054796,
+          "flowA_remit_rub": 298068906.94530386,
+          "flowB_events": 2238.0,
+          "state_NEUTRAL": 856.0,
+          "base_flowB_volume_rub": 291387671.3162912,
+          "feat_flowB_volume_rub": 303929789.8035272,
+          "state_OK": 1364.0,
+          "user_save_signal_rub": 2511756.358196019,
+          "user_save_events": 1116.0,
+          "user_save_reserve_rub": 158040.58908280038,
+          "state_DRIFT": 17.0,
+          "state_BETTER": 1.0,
+          "eff_retained_volume_rub": 656083.6353798518
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 24608,
+        "OK": 50082,
+        "DRIFT": 4348,
+        "BETTER": 232
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 22089,
+        "base:NEUTRAL:transfer": 22798,
+        "feat:OK:transfer": 48111,
+        "base:OK:transfer": 46589,
+        "feat:OK:abandon": 1971,
+        "base:OK:abandon": 3493,
+        "feat:NEUTRAL:abandon": 184,
+        "base:NEUTRAL:abandon": 1810,
+        "feat:DRIFT:reserve": 1431,
+        "base:DRIFT:transfer_bad": 1751,
+        "feat:DRIFT:reserve->EXECUTED": 1126,
+        "feat:BETTER:transfer": 223,
+        "base:BETTER:transfer": 214,
+        "feat:NEUTRAL:reserve": 2335,
+        "feat:NEUTRAL:reserve->EXPIRED": 1607,
+        "base:DRIFT:switch_informal": 2405,
+        "feat:DRIFT:transfer": 2637,
+        "base:DRIFT:abandon": 192,
+        "feat:DRIFT:reserve->EXPIRED": 305,
+        "feat:NEUTRAL:reserve->EXECUTED": 728,
+        "feat:DRIFT:switch_informal": 147,
+        "feat:DRIFT:abandon": 133,
+        "base:BETTER:abandon": 18,
+        "feat:BETTER:abandon": 9
+      },
+      "reserve_out": {
+        "DRIFT:EXECUTED": 1126,
+        "NEUTRAL:EXPIRED": 1607,
+        "DRIFT:EXPIRED": 305,
+        "NEUTRAL:EXECUTED": 728
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 1126,
+          "wait_median": 1.0,
+          "gain_median": 0.0,
+          "gain_mean": 48.4,
+          "gain_share_positive": 0.31
+        },
+        "NEUTRAL": {
+          "executed": 728,
+          "wait_median": 5.0,
+          "gain_median": 273.1,
+          "gain_mean": 230.7,
+          "gain_share_positive": 0.88
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 8318
+      }
+    },
+    "savings_noorder": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5938672195.310693,
+        "flowB_events": 79270.0,
+        "base_flowB_volume_rub": 2283900376.057572,
+        "feat_flowB_volume_rub": 2346789397.803135,
+        "push_sent": 43885.0,
+        "user_save_signal_rub": 14237702.93591794,
+        "user_save_events": 40558.0,
+        "user_save_positive_noorder": 29808.0,
+        "user_save_positive_order": 29808.0,
+        "base_switch_volume_rub": 49647837.01404727,
+        "eff_retained_volume_rub": 34302725.98848248,
+        "eff_retained_sends": 1322.0
+      },
+      "per_portrait": {
+        "P3_ainura": {
+          "flowA_volume_rub": 1529411790.0181742,
+          "flowA_remit_rub": 839632181.3613734,
+          "flowB_events": 16711.0,
+          "state_NEUTRAL": 4695.0,
+          "base_flowB_volume_rub": 442130283.61380595,
+          "feat_flowB_volume_rub": 450440309.26008224,
+          "state_OK": 12016.0,
+          "user_save_signal_rub": 2488111.7199423355,
+          "user_save_events": 9054.0
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 3816628221.036061,
+          "flowA_remit_rub": 2078216063.6320136,
+          "flowB_events": 26552.0,
+          "state_OK": 18816.0,
+          "base_flowB_volume_rub": 542004511.2313777,
+          "feat_flowB_volume_rub": 552050652.8846256,
+          "user_save_signal_rub": 2176754.4732411834,
+          "user_save_events": 14347.0,
+          "state_NEUTRAL": 7736.0
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1583016995.778092,
+          "flowA_remit_rub": 881560734.1189518,
+          "flowB_events": 5861.0,
+          "state_OK": 4198.0,
+          "base_flowB_volume_rub": 403928460.1066042,
+          "feat_flowB_volume_rub": 415708012.4660122,
+          "user_save_signal_rub": 1630879.7053486733,
+          "user_save_events": 3337.0,
+          "state_NEUTRAL": 1662.0,
+          "state_DRIFT": 1.0,
+          "eff_retained_volume_rub": 33601.74797633332
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 3405978996.644114,
+          "flowA_remit_rub": 1841194309.2530482,
+          "flowB_events": 27908.0,
+          "state_OK": 13688.0,
+          "base_flowB_volume_rub": 607248157.8996055,
+          "feat_flowB_volume_rub": 635731755.7846334,
+          "user_save_signal_rub": 5451851.648888962,
+          "user_save_events": 12717.0,
+          "state_DRIFT": 4330.0,
+          "state_NEUTRAL": 9659.0,
+          "state_BETTER": 231.0,
+          "eff_retained_volume_rub": 33732186.010232665
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 543062206.8054796,
+          "flowA_remit_rub": 298068906.94530386,
+          "flowB_events": 2238.0,
+          "state_NEUTRAL": 856.0,
+          "base_flowB_volume_rub": 288588963.20619386,
+          "feat_flowB_volume_rub": 292858667.4077902,
+          "state_OK": 1364.0,
+          "user_save_signal_rub": 2490105.3884966737,
+          "user_save_events": 1103.0,
+          "state_DRIFT": 17.0,
+          "state_BETTER": 1.0,
+          "eff_retained_volume_rub": 536938.2302735004
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 24608,
+        "OK": 50082,
+        "DRIFT": 4348,
+        "BETTER": 232
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 22314,
+        "base:NEUTRAL:transfer": 22569,
+        "feat:OK:transfer": 47609,
+        "base:OK:transfer": 46107,
+        "feat:OK:abandon": 2473,
+        "base:OK:abandon": 3975,
+        "feat:NEUTRAL:abandon": 2294,
+        "base:NEUTRAL:abandon": 2039,
+        "feat:DRIFT:abandon": 780,
+        "base:DRIFT:transfer_bad": 2174,
+        "feat:BETTER:transfer": 221,
+        "base:BETTER:transfer": 212,
+        "feat:DRIFT:switch_informal": 610,
+        "base:DRIFT:switch_informal": 1932,
+        "feat:DRIFT:transfer": 2958,
+        "base:DRIFT:abandon": 242,
+        "base:BETTER:abandon": 20,
+        "feat:BETTER:abandon": 11
+      },
+      "reserve_out": {},
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 0,
+          "wait_median": null,
+          "gain_median": null,
+          "gain_mean": null,
+          "gain_share_positive": null
+        },
+        "NEUTRAL": {
+          "executed": 0,
+          "wait_median": null,
+          "gain_median": null,
+          "gain_mean": null,
+          "gain_share_positive": null
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 8318
+      }
+    },
+    "savings_order": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5938672195.310693,
+        "flowB_events": 79270.0,
+        "base_flowB_volume_rub": 2283900376.057572,
+        "feat_flowB_volume_rub": 2372672919.468897,
+        "push_sent": 43885.0,
+        "user_save_signal_rub": 14443093.851962129,
+        "user_save_events": 41131.0,
+        "user_save_positive_noorder": 30290.0,
+        "user_save_positive_order": 30472.0,
+        "user_save_reserve_rub": 502693.9091975404,
+        "user_save_reserve_n": 1499.0,
+        "timing_shift_events": 733.0,
+        "timing_shift_volume_rub": 19300253.332164988,
+        "base_switch_volume_rub": 49647837.01404727,
+        "eff_retained_volume_rub": 42160863.40615103,
+        "eff_retained_sends": 1631.0,
+        "eff_recovered_volume_rub": 18953628.547370538,
+        "eff_recovered_sends": 628.0
+      },
+      "per_portrait": {
+        "P3_ainura": {
+          "flowA_volume_rub": 1529411790.0181742,
+          "flowA_remit_rub": 839632181.3613734,
+          "flowB_events": 16711.0,
+          "state_NEUTRAL": 4695.0,
+          "base_flowB_volume_rub": 442130283.61380595,
+          "feat_flowB_volume_rub": 451318806.3767482,
+          "state_OK": 12016.0,
+          "user_save_signal_rub": 2488111.7199423355,
+          "user_save_events": 9054.0,
+          "user_save_reserve_rub": 33890.25384676253
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 3816628221.036061,
+          "flowA_remit_rub": 2078216063.6320136,
+          "flowB_events": 26552.0,
+          "state_OK": 18816.0,
+          "base_flowB_volume_rub": 542004511.2313777,
+          "feat_flowB_volume_rub": 554616543.5315332,
+          "user_save_signal_rub": 2176754.4732411834,
+          "user_save_events": 14347.0,
+          "state_NEUTRAL": 7736.0,
+          "user_save_reserve_rub": 63559.92343513212
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1583016995.778092,
+          "flowA_remit_rub": 881560734.1189518,
+          "flowB_events": 5861.0,
+          "state_OK": 4198.0,
+          "base_flowB_volume_rub": 403928460.1066042,
+          "feat_flowB_volume_rub": 418717286.68838066,
+          "user_save_signal_rub": 1630879.7053486733,
+          "user_save_events": 3337.0,
+          "state_NEUTRAL": 1662.0,
+          "user_save_reserve_rub": 112930.49729538999,
+          "state_DRIFT": 1.0,
+          "eff_retained_volume_rub": 33601.74797633332
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 3405978996.644114,
+          "flowA_remit_rub": 1841194309.2530482,
+          "flowB_events": 27908.0,
+          "state_OK": 13688.0,
+          "base_flowB_volume_rub": 607248157.8996055,
+          "feat_flowB_volume_rub": 652769623.4515853,
+          "user_save_signal_rub": 5654305.24737025,
+          "user_save_events": 13289.0,
+          "state_DRIFT": 4330.0,
+          "user_save_reserve_rub": 229193.92429191616,
+          "state_NEUTRAL": 9659.0,
+          "state_BETTER": 231.0,
+          "eff_retained_volume_rub": 41590323.427901216
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 543062206.8054796,
+          "flowA_remit_rub": 298068906.94530386,
+          "flowB_events": 2238.0,
+          "state_NEUTRAL": 856.0,
+          "base_flowB_volume_rub": 288588963.20619386,
+          "feat_flowB_volume_rub": 295250659.4206436,
+          "state_OK": 1364.0,
+          "user_save_signal_rub": 2493042.7060595783,
+          "user_save_events": 1104.0,
+          "state_DRIFT": 17.0,
+          "state_BETTER": 1.0,
+          "user_save_reserve_rub": 63119.31032834038,
+          "eff_retained_volume_rub": 536938.2302735004
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 24608,
+        "OK": 50082,
+        "DRIFT": 4348,
+        "BETTER": 232
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 21579,
+        "base:NEUTRAL:transfer": 22569,
+        "feat:OK:transfer": 47609,
+        "base:OK:transfer": 46107,
+        "feat:OK:abandon": 2473,
+        "base:OK:abandon": 3975,
+        "feat:NEUTRAL:abandon": 1592,
+        "base:NEUTRAL:abandon": 2039,
+        "feat:DRIFT:reserve": 1342,
+        "base:DRIFT:transfer_bad": 2174,
+        "feat:DRIFT:reserve->EXECUTED": 1064,
+        "feat:BETTER:transfer": 221,
+        "base:BETTER:transfer": 212,
+        "feat:NEUTRAL:reserve": 1437,
+        "feat:NEUTRAL:reserve->EXPIRED": 1002,
+        "base:DRIFT:switch_informal": 1932,
+        "feat:DRIFT:transfer": 2294,
+        "feat:DRIFT:abandon": 411,
+        "base:DRIFT:abandon": 242,
+        "feat:DRIFT:reserve->EXPIRED": 278,
+        "feat:NEUTRAL:reserve->EXECUTED": 435,
+        "feat:DRIFT:switch_informal": 301,
+        "base:BETTER:abandon": 20,
+        "feat:BETTER:abandon": 11
+      },
+      "reserve_out": {
+        "DRIFT:EXECUTED": 1064,
+        "NEUTRAL:EXPIRED": 1002,
+        "DRIFT:EXPIRED": 278,
+        "NEUTRAL:EXECUTED": 435
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 1064,
+          "wait_median": 1.0,
+          "gain_median": 0.0,
+          "gain_mean": 50.1,
+          "gain_share_positive": 0.32
+        },
+        "NEUTRAL": {
+          "executed": 435,
+          "wait_median": 4,
+          "gain_median": 265.3,
+          "gain_mean": 218.1,
+          "gain_share_positive": 0.86
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 8318
+      }
+    },
+    "central_mech_A": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5938672195.310693,
+        "flowB_events": 79270.0,
+        "base_flowB_volume_rub": 2283900376.057572,
+        "feat_flowB_volume_rub": 2362847011.237142,
+        "push_sent": 43885.0,
+        "user_save_signal_rub": 14285496.585407091,
+        "user_save_events": 40753.0,
+        "user_save_positive_noorder": 29956.0,
+        "user_save_positive_order": 30161.0,
+        "base_switch_volume_rub": 49647837.01404727,
+        "user_save_reserve_rub": 522669.51244347607,
+        "user_save_reserve_n": 1554.0,
+        "eff_retained_volume_rub": 38018460.43855672,
+        "eff_retained_sends": 1466.0,
+        "eff_recovered_volume_rub": 20059141.181782193,
+        "eff_recovered_sends": 662.0,
+        "timing_shift_events": 768.0,
+        "timing_shift_volume_rub": 20231834.844645273
+      },
+      "per_portrait": {
+        "P3_ainura": {
+          "flowA_volume_rub": 1529411790.0181742,
+          "flowA_remit_rub": 839632181.3613734,
+          "flowB_events": 16711.0,
+          "state_NEUTRAL": 4695.0,
+          "base_flowB_volume_rub": 442130283.61380595,
+          "feat_flowB_volume_rub": 451318806.3767482,
+          "state_OK": 12016.0,
+          "user_save_signal_rub": 2488111.7199423355,
+          "user_save_events": 9054.0,
+          "user_save_reserve_rub": 33890.25384676253
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 3816628221.036061,
+          "flowA_remit_rub": 2078216063.6320136,
+          "flowB_events": 26552.0,
+          "state_OK": 18816.0,
+          "base_flowB_volume_rub": 542004511.2313777,
+          "feat_flowB_volume_rub": 554616543.5315332,
+          "user_save_signal_rub": 2176754.4732411834,
+          "user_save_events": 14347.0,
+          "state_NEUTRAL": 7736.0,
+          "user_save_reserve_rub": 63559.92343513212
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1583016995.778092,
+          "flowA_remit_rub": 881560734.1189518,
+          "flowB_events": 5861.0,
+          "state_OK": 4198.0,
+          "base_flowB_volume_rub": 403928460.1066042,
+          "feat_flowB_volume_rub": 418717286.68838066,
+          "user_save_signal_rub": 1630879.7053486733,
+          "user_save_events": 3337.0,
+          "state_NEUTRAL": 1662.0,
+          "user_save_reserve_rub": 112930.49729538999,
+          "state_DRIFT": 1.0,
+          "eff_retained_volume_rub": 33601.74797633332
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 3405978996.644114,
+          "flowA_remit_rub": 1841194309.2530482,
+          "flowB_events": 27908.0,
+          "state_OK": 13688.0,
+          "base_flowB_volume_rub": 607248157.8996055,
+          "feat_flowB_volume_rub": 643102607.0380714,
+          "user_save_signal_rub": 5500753.496919802,
+          "user_save_events": 12912.0,
+          "state_DRIFT": 4330.0,
+          "state_NEUTRAL": 9659.0,
+          "state_BETTER": 231.0,
+          "user_save_reserve_rub": 247372.64573141988,
+          "eff_retained_volume_rub": 37447920.46030687
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 543062206.8054796,
+          "flowA_remit_rub": 298068906.94530386,
+          "flowB_events": 2238.0,
+          "state_NEUTRAL": 856.0,
+          "base_flowB_volume_rub": 288588963.20619386,
+          "feat_flowB_volume_rub": 295091767.60240346,
+          "state_OK": 1364.0,
+          "user_save_signal_rub": 2488997.18995498,
+          "user_save_events": 1103.0,
+          "state_DRIFT": 17.0,
+          "state_BETTER": 1.0,
+          "user_save_reserve_rub": 64916.19213477194,
+          "eff_retained_volume_rub": 536938.2302735004
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 24608,
+        "OK": 50082,
+        "DRIFT": 4348,
+        "BETTER": 232
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 21579,
+        "base:NEUTRAL:transfer": 22569,
+        "feat:OK:transfer": 47609,
+        "base:OK:transfer": 46107,
+        "feat:OK:abandon": 2473,
+        "base:OK:abandon": 3975,
+        "feat:NEUTRAL:abandon": 1592,
+        "base:NEUTRAL:abandon": 2039,
+        "feat:DRIFT:abandon": 618,
+        "base:DRIFT:transfer_bad": 2174,
+        "feat:BETTER:transfer": 221,
+        "base:BETTER:transfer": 212,
+        "feat:NEUTRAL:reserve": 1437,
+        "feat:NEUTRAL:reserve->EXPIRED": 1002,
+        "feat:DRIFT:reserve": 1417,
+        "base:DRIFT:switch_informal": 1932,
+        "feat:DRIFT:reserve->EXECUTED": 1119,
+        "feat:DRIFT:transfer": 1847,
+        "base:DRIFT:abandon": 242,
+        "feat:DRIFT:reserve->EXPIRED": 298,
+        "feat:DRIFT:switch_informal": 466,
+        "feat:NEUTRAL:reserve->EXECUTED": 435,
+        "base:BETTER:abandon": 20,
+        "feat:BETTER:abandon": 11
+      },
+      "reserve_out": {
+        "NEUTRAL:EXPIRED": 1002,
+        "DRIFT:EXECUTED": 1119,
+        "DRIFT:EXPIRED": 298,
+        "NEUTRAL:EXECUTED": 435
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 1119,
+          "wait_median": 1,
+          "gain_median": 0.0,
+          "gain_mean": 53.9,
+          "gain_share_positive": 0.33
+        },
+        "NEUTRAL": {
+          "executed": 435,
+          "wait_median": 4,
+          "gain_median": 265.3,
+          "gain_mean": 218.1,
+          "gain_share_positive": 0.86
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 8318
+      }
+    },
+    "central_mech_B": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5938672195.310693,
+        "flowB_events": 79270.0,
+        "base_flowB_volume_rub": 2283900376.057572,
+        "feat_flowB_volume_rub": 2369521113.289324,
+        "push_sent": 43885.0,
+        "user_save_signal_rub": 14394947.311087618,
+        "user_save_events": 41012.0,
+        "user_save_positive_noorder": 30188.0,
+        "user_save_positive_order": 30320.0,
+        "user_save_reserve_rub": 464060.2503952538,
+        "user_save_reserve_n": 1213.0,
+        "timing_shift_events": 530.0,
+        "timing_shift_volume_rub": 14165374.333652731,
+        "base_switch_volume_rub": 49647837.01404727,
+        "eff_retained_volume_rub": 40565397.73199416,
+        "eff_retained_sends": 1570.0,
+        "eff_recovered_volume_rub": 15891563.973244151,
+        "eff_recovered_sends": 508.0
+      },
+      "per_portrait": {
+        "P3_ainura": {
+          "flowA_volume_rub": 1529411790.0181742,
+          "flowA_remit_rub": 839632181.3613734,
+          "flowB_events": 16711.0,
+          "state_NEUTRAL": 4695.0,
+          "base_flowB_volume_rub": 442130283.61380595,
+          "feat_flowB_volume_rub": 451318806.3767482,
+          "state_OK": 12016.0,
+          "user_save_signal_rub": 2488111.7199423355,
+          "user_save_events": 9054.0,
+          "user_save_reserve_rub": 33890.25384676253
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 3816628221.036061,
+          "flowA_remit_rub": 2078216063.6320136,
+          "flowB_events": 26552.0,
+          "state_OK": 18816.0,
+          "base_flowB_volume_rub": 542004511.2313777,
+          "feat_flowB_volume_rub": 554616543.5315332,
+          "user_save_signal_rub": 2176754.4732411834,
+          "user_save_events": 14347.0,
+          "state_NEUTRAL": 7736.0,
+          "user_save_reserve_rub": 63559.92343513212
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1583016995.778092,
+          "flowA_remit_rub": 881560734.1189518,
+          "flowB_events": 5861.0,
+          "state_OK": 4198.0,
+          "base_flowB_volume_rub": 403928460.1066042,
+          "feat_flowB_volume_rub": 418717286.68838066,
+          "user_save_signal_rub": 1630879.7053486733,
+          "user_save_events": 3337.0,
+          "state_NEUTRAL": 1662.0,
+          "user_save_reserve_rub": 112930.49729538999,
+          "state_DRIFT": 1.0,
+          "eff_retained_volume_rub": 33601.74797633332
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 3405978996.644114,
+          "flowA_remit_rub": 1841194309.2530482,
+          "flowB_events": 27908.0,
+          "state_OK": 13688.0,
+          "base_flowB_volume_rub": 607248157.8996055,
+          "feat_flowB_volume_rub": 649617817.2720126,
+          "user_save_signal_rub": 5606158.70649574,
+          "user_save_events": 13170.0,
+          "state_DRIFT": 4330.0,
+          "user_save_reserve_rub": 190560.26548962964,
+          "state_NEUTRAL": 9659.0,
+          "state_BETTER": 231.0,
+          "eff_retained_volume_rub": 39994857.75374434
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 543062206.8054796,
+          "flowA_remit_rub": 298068906.94530386,
+          "flowB_events": 2238.0,
+          "state_NEUTRAL": 856.0,
+          "base_flowB_volume_rub": 288588963.20619386,
+          "feat_flowB_volume_rub": 295250659.4206436,
+          "state_OK": 1364.0,
+          "user_save_signal_rub": 2493042.7060595783,
+          "user_save_events": 1104.0,
+          "state_DRIFT": 17.0,
+          "state_BETTER": 1.0,
+          "user_save_reserve_rub": 63119.31032834038,
+          "eff_retained_volume_rub": 536938.2302735004
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 24608,
+        "OK": 50082,
+        "DRIFT": 4348,
+        "BETTER": 232
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 21579,
+        "base:NEUTRAL:transfer": 22569,
+        "feat:OK:transfer": 47609,
+        "base:OK:transfer": 46107,
+        "feat:OK:abandon": 2473,
+        "base:OK:abandon": 3975,
+        "feat:NEUTRAL:abandon": 1592,
+        "base:NEUTRAL:abandon": 2039,
+        "feat:DRIFT:reserve": 985,
+        "base:DRIFT:transfer_bad": 2174,
+        "feat:DRIFT:reserve->EXECUTED": 778,
+        "feat:BETTER:transfer": 221,
+        "base:BETTER:transfer": 212,
+        "feat:NEUTRAL:reserve": 1437,
+        "feat:NEUTRAL:reserve->EXPIRED": 1002,
+        "base:DRIFT:switch_informal": 1932,
+        "feat:DRIFT:transfer": 2505,
+        "feat:DRIFT:abandon": 496,
+        "base:DRIFT:abandon": 242,
+        "feat:DRIFT:reserve->EXPIRED": 207,
+        "feat:NEUTRAL:reserve->EXECUTED": 435,
+        "feat:DRIFT:switch_informal": 362,
+        "base:BETTER:abandon": 20,
+        "feat:BETTER:abandon": 11
+      },
+      "reserve_out": {
+        "DRIFT:EXECUTED": 778,
+        "NEUTRAL:EXPIRED": 1002,
+        "DRIFT:EXPIRED": 207,
+        "NEUTRAL:EXECUTED": 435
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 778,
+          "wait_median": 1.0,
+          "gain_median": 0.0,
+          "gain_mean": 49.9,
+          "gain_share_positive": 0.31
+        },
+        "NEUTRAL": {
+          "executed": 435,
+          "wait_median": 4,
+          "gain_median": 265.3,
+          "gain_mean": 218.1,
+          "gain_share_positive": 0.86
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 8318
+      }
+    },
+    "central_mech_C": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5938672195.310693,
+        "flowB_events": 79270.0,
+        "base_flowB_volume_rub": 2283900376.057572,
+        "feat_flowB_volume_rub": 2372672919.468897,
+        "push_sent": 43885.0,
+        "user_save_signal_rub": 14443093.851962129,
+        "user_save_events": 41131.0,
+        "user_save_positive_noorder": 30290.0,
+        "user_save_positive_order": 30472.0,
+        "user_save_reserve_rub": 502693.9091975404,
+        "user_save_reserve_n": 1499.0,
+        "timing_shift_events": 733.0,
+        "timing_shift_volume_rub": 19300253.332164988,
+        "base_switch_volume_rub": 49647837.01404727,
+        "eff_retained_volume_rub": 42160863.40615103,
+        "eff_retained_sends": 1631.0,
+        "eff_recovered_volume_rub": 18953628.547370538,
+        "eff_recovered_sends": 628.0
+      },
+      "per_portrait": {
+        "P3_ainura": {
+          "flowA_volume_rub": 1529411790.0181742,
+          "flowA_remit_rub": 839632181.3613734,
+          "flowB_events": 16711.0,
+          "state_NEUTRAL": 4695.0,
+          "base_flowB_volume_rub": 442130283.61380595,
+          "feat_flowB_volume_rub": 451318806.3767482,
+          "state_OK": 12016.0,
+          "user_save_signal_rub": 2488111.7199423355,
+          "user_save_events": 9054.0,
+          "user_save_reserve_rub": 33890.25384676253
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 3816628221.036061,
+          "flowA_remit_rub": 2078216063.6320136,
+          "flowB_events": 26552.0,
+          "state_OK": 18816.0,
+          "base_flowB_volume_rub": 542004511.2313777,
+          "feat_flowB_volume_rub": 554616543.5315332,
+          "user_save_signal_rub": 2176754.4732411834,
+          "user_save_events": 14347.0,
+          "state_NEUTRAL": 7736.0,
+          "user_save_reserve_rub": 63559.92343513212
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1583016995.778092,
+          "flowA_remit_rub": 881560734.1189518,
+          "flowB_events": 5861.0,
+          "state_OK": 4198.0,
+          "base_flowB_volume_rub": 403928460.1066042,
+          "feat_flowB_volume_rub": 418717286.68838066,
+          "user_save_signal_rub": 1630879.7053486733,
+          "user_save_events": 3337.0,
+          "state_NEUTRAL": 1662.0,
+          "user_save_reserve_rub": 112930.49729538999,
+          "state_DRIFT": 1.0,
+          "eff_retained_volume_rub": 33601.74797633332
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 3405978996.644114,
+          "flowA_remit_rub": 1841194309.2530482,
+          "flowB_events": 27908.0,
+          "state_OK": 13688.0,
+          "base_flowB_volume_rub": 607248157.8996055,
+          "feat_flowB_volume_rub": 652769623.4515853,
+          "user_save_signal_rub": 5654305.24737025,
+          "user_save_events": 13289.0,
+          "state_DRIFT": 4330.0,
+          "user_save_reserve_rub": 229193.92429191616,
+          "state_NEUTRAL": 9659.0,
+          "state_BETTER": 231.0,
+          "eff_retained_volume_rub": 41590323.427901216
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 543062206.8054796,
+          "flowA_remit_rub": 298068906.94530386,
+          "flowB_events": 2238.0,
+          "state_NEUTRAL": 856.0,
+          "base_flowB_volume_rub": 288588963.20619386,
+          "feat_flowB_volume_rub": 295250659.4206436,
+          "state_OK": 1364.0,
+          "user_save_signal_rub": 2493042.7060595783,
+          "user_save_events": 1104.0,
+          "state_DRIFT": 17.0,
+          "state_BETTER": 1.0,
+          "user_save_reserve_rub": 63119.31032834038,
+          "eff_retained_volume_rub": 536938.2302735004
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 24608,
+        "OK": 50082,
+        "DRIFT": 4348,
+        "BETTER": 232
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 21579,
+        "base:NEUTRAL:transfer": 22569,
+        "feat:OK:transfer": 47609,
+        "base:OK:transfer": 46107,
+        "feat:OK:abandon": 2473,
+        "base:OK:abandon": 3975,
+        "feat:NEUTRAL:abandon": 1592,
+        "base:NEUTRAL:abandon": 2039,
+        "feat:DRIFT:reserve": 1342,
+        "base:DRIFT:transfer_bad": 2174,
+        "feat:DRIFT:reserve->EXECUTED": 1064,
+        "feat:BETTER:transfer": 221,
+        "base:BETTER:transfer": 212,
+        "feat:NEUTRAL:reserve": 1437,
+        "feat:NEUTRAL:reserve->EXPIRED": 1002,
+        "base:DRIFT:switch_informal": 1932,
+        "feat:DRIFT:transfer": 2294,
+        "feat:DRIFT:abandon": 411,
+        "base:DRIFT:abandon": 242,
+        "feat:DRIFT:reserve->EXPIRED": 278,
+        "feat:NEUTRAL:reserve->EXECUTED": 435,
+        "feat:DRIFT:switch_informal": 301,
+        "base:BETTER:abandon": 20,
+        "feat:BETTER:abandon": 11
+      },
+      "reserve_out": {
+        "DRIFT:EXECUTED": 1064,
+        "NEUTRAL:EXPIRED": 1002,
+        "DRIFT:EXPIRED": 278,
+        "NEUTRAL:EXECUTED": 435
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 1064,
+          "wait_median": 1.0,
+          "gain_median": 0.0,
+          "gain_mean": 50.1,
+          "gain_share_positive": 0.32
+        },
+        "NEUTRAL": {
+          "executed": 435,
+          "wait_median": 4,
+          "gain_median": 265.3,
+          "gain_mean": 218.1,
+          "gain_share_positive": 0.86
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 8318
+      }
+    },
+    "weights_base": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5938672195.310693,
+        "flowB_events": 79270.0,
+        "base_flowB_volume_rub": 2283900376.057572,
+        "feat_flowB_volume_rub": 2372672919.468897,
+        "push_sent": 43885.0,
+        "user_save_signal_rub": 14443093.851962129,
+        "user_save_events": 41131.0,
+        "user_save_positive_noorder": 30290.0,
+        "user_save_positive_order": 30472.0,
+        "user_save_reserve_rub": 502693.9091975404,
+        "user_save_reserve_n": 1499.0,
+        "timing_shift_events": 733.0,
+        "timing_shift_volume_rub": 19300253.332164988,
+        "base_switch_volume_rub": 49647837.01404727,
+        "eff_retained_volume_rub": 42160863.40615103,
+        "eff_retained_sends": 1631.0,
+        "eff_recovered_volume_rub": 18953628.547370538,
+        "eff_recovered_sends": 628.0
+      },
+      "per_portrait": {
+        "P3_ainura": {
+          "flowA_volume_rub": 1529411790.0181742,
+          "flowA_remit_rub": 839632181.3613734,
+          "flowB_events": 16711.0,
+          "state_NEUTRAL": 4695.0,
+          "base_flowB_volume_rub": 442130283.61380595,
+          "feat_flowB_volume_rub": 451318806.3767482,
+          "state_OK": 12016.0,
+          "user_save_signal_rub": 2488111.7199423355,
+          "user_save_events": 9054.0,
+          "user_save_reserve_rub": 33890.25384676253
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 3816628221.036061,
+          "flowA_remit_rub": 2078216063.6320136,
+          "flowB_events": 26552.0,
+          "state_OK": 18816.0,
+          "base_flowB_volume_rub": 542004511.2313777,
+          "feat_flowB_volume_rub": 554616543.5315332,
+          "user_save_signal_rub": 2176754.4732411834,
+          "user_save_events": 14347.0,
+          "state_NEUTRAL": 7736.0,
+          "user_save_reserve_rub": 63559.92343513212
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1583016995.778092,
+          "flowA_remit_rub": 881560734.1189518,
+          "flowB_events": 5861.0,
+          "state_OK": 4198.0,
+          "base_flowB_volume_rub": 403928460.1066042,
+          "feat_flowB_volume_rub": 418717286.68838066,
+          "user_save_signal_rub": 1630879.7053486733,
+          "user_save_events": 3337.0,
+          "state_NEUTRAL": 1662.0,
+          "user_save_reserve_rub": 112930.49729538999,
+          "state_DRIFT": 1.0,
+          "eff_retained_volume_rub": 33601.74797633332
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 3405978996.644114,
+          "flowA_remit_rub": 1841194309.2530482,
+          "flowB_events": 27908.0,
+          "state_OK": 13688.0,
+          "base_flowB_volume_rub": 607248157.8996055,
+          "feat_flowB_volume_rub": 652769623.4515853,
+          "user_save_signal_rub": 5654305.24737025,
+          "user_save_events": 13289.0,
+          "state_DRIFT": 4330.0,
+          "user_save_reserve_rub": 229193.92429191616,
+          "state_NEUTRAL": 9659.0,
+          "state_BETTER": 231.0,
+          "eff_retained_volume_rub": 41590323.427901216
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 543062206.8054796,
+          "flowA_remit_rub": 298068906.94530386,
+          "flowB_events": 2238.0,
+          "state_NEUTRAL": 856.0,
+          "base_flowB_volume_rub": 288588963.20619386,
+          "feat_flowB_volume_rub": 295250659.4206436,
+          "state_OK": 1364.0,
+          "user_save_signal_rub": 2493042.7060595783,
+          "user_save_events": 1104.0,
+          "state_DRIFT": 17.0,
+          "state_BETTER": 1.0,
+          "user_save_reserve_rub": 63119.31032834038,
+          "eff_retained_volume_rub": 536938.2302735004
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 24608,
+        "OK": 50082,
+        "DRIFT": 4348,
+        "BETTER": 232
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 21579,
+        "base:NEUTRAL:transfer": 22569,
+        "feat:OK:transfer": 47609,
+        "base:OK:transfer": 46107,
+        "feat:OK:abandon": 2473,
+        "base:OK:abandon": 3975,
+        "feat:NEUTRAL:abandon": 1592,
+        "base:NEUTRAL:abandon": 2039,
+        "feat:DRIFT:reserve": 1342,
+        "base:DRIFT:transfer_bad": 2174,
+        "feat:DRIFT:reserve->EXECUTED": 1064,
+        "feat:BETTER:transfer": 221,
+        "base:BETTER:transfer": 212,
+        "feat:NEUTRAL:reserve": 1437,
+        "feat:NEUTRAL:reserve->EXPIRED": 1002,
+        "base:DRIFT:switch_informal": 1932,
+        "feat:DRIFT:transfer": 2294,
+        "feat:DRIFT:abandon": 411,
+        "base:DRIFT:abandon": 242,
+        "feat:DRIFT:reserve->EXPIRED": 278,
+        "feat:NEUTRAL:reserve->EXECUTED": 435,
+        "feat:DRIFT:switch_informal": 301,
+        "base:BETTER:abandon": 20,
+        "feat:BETTER:abandon": 11
+      },
+      "reserve_out": {
+        "DRIFT:EXECUTED": 1064,
+        "NEUTRAL:EXPIRED": 1002,
+        "DRIFT:EXPIRED": 278,
+        "NEUTRAL:EXECUTED": 435
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 1064,
+          "wait_median": 1.0,
+          "gain_median": 0.0,
+          "gain_mean": 50.1,
+          "gain_share_positive": 0.32
+        },
+        "NEUTRAL": {
+          "executed": 435,
+          "wait_median": 4,
+          "gain_median": 265.3,
+          "gain_mean": 218.1,
+          "gain_share_positive": 0.86
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 8318
+      }
+    },
+    "weights_young_flow": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5931617285.457251,
+        "flowB_events": 80408.0,
+        "base_flowB_volume_rub": 2092081341.625978,
+        "feat_flowB_volume_rub": 2173292000.612975,
+        "push_sent": 44645.0,
+        "user_save_signal_rub": 12761970.789068732,
+        "user_save_events": 41841.0,
+        "user_save_positive_noorder": 30309.0,
+        "user_save_positive_order": 30482.0,
+        "user_save_reserve_rub": 469632.6739894068,
+        "user_save_reserve_n": 1558.0,
+        "timing_shift_events": 735.0,
+        "timing_shift_volume_rub": 19038167.503677223,
+        "base_switch_volume_rub": 47691315.63756015,
+        "eff_retained_volume_rub": 39425469.98609859,
+        "eff_retained_sends": 1520.0,
+        "eff_recovered_volume_rub": 17919817.712953947,
+        "eff_recovered_sends": 640.0
+      },
+      "per_portrait": {
+        "P3_ainura": {
+          "flowA_volume_rub": 1311648306.7154093,
+          "flowA_remit_rub": 714968757.2080868,
+          "flowB_events": 14093.0,
+          "state_NEUTRAL": 3911.0,
+          "base_flowB_volume_rub": 369738565.71811736,
+          "feat_flowB_volume_rub": 376441190.22974813,
+          "state_OK": 10182.0,
+          "user_save_signal_rub": 2052613.5239675343,
+          "user_save_events": 7700.0,
+          "user_save_reserve_rub": 17866.16372401988
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 4978127330.538542,
+          "flowA_remit_rub": 2711929174.2345314,
+          "flowB_events": 34908.0,
+          "state_OK": 24754.0,
+          "base_flowB_volume_rub": 710156315.4144273,
+          "feat_flowB_volume_rub": 728830625.5257391,
+          "user_save_signal_rub": 2928358.4586445447,
+          "user_save_events": 18794.0,
+          "state_NEUTRAL": 10154.0,
+          "user_save_reserve_rub": 124062.69236696903
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1043456877.5748065,
+          "flowA_remit_rub": 588183040.6364523,
+          "flowB_events": 3907.0,
+          "state_OK": 2795.0,
+          "base_flowB_volume_rub": 276185229.21659154,
+          "feat_flowB_volume_rub": 285620643.9555555,
+          "user_save_signal_rub": 1057739.5223754924,
+          "user_save_events": 2226.0,
+          "state_NEUTRAL": 1112.0,
+          "user_save_reserve_rub": 83300.25984058043
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 3211863109.7365775,
+          "flowA_remit_rub": 1736625539.87647,
+          "flowB_events": 26204.0,
+          "state_OK": 12793.0,
+          "base_flowB_volume_rub": 572948458.8626617,
+          "feat_flowB_volume_rub": 616150030.1117902,
+          "user_save_signal_rub": 5273373.494672546,
+          "user_save_events": 12466.0,
+          "state_DRIFT": 4130.0,
+          "user_save_reserve_rub": 232789.4360895846,
+          "state_NEUTRAL": 9053.0,
+          "state_BETTER": 228.0,
+          "eff_retained_volume_rub": 38981263.6005516
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 333002585.71658885,
+          "flowA_remit_rub": 179910773.50170517,
+          "flowB_events": 1296.0,
+          "state_OK": 795.0,
+          "base_flowB_volume_rub": 163052772.41417664,
+          "feat_flowB_volume_rub": 166249510.79014927,
+          "user_save_signal_rub": 1449885.7894086277,
+          "user_save_events": 655.0,
+          "state_NEUTRAL": 488.0,
+          "state_DRIFT": 12.0,
+          "user_save_reserve_rub": 11614.121968251897,
+          "state_BETTER": 1.0,
+          "eff_retained_volume_rub": 444206.3855469909
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 24718,
+        "OK": 51319,
+        "DRIFT": 4142,
+        "BETTER": 229
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 21672,
+        "base:NEUTRAL:transfer": 22727,
+        "feat:OK:transfer": 48742,
+        "base:OK:transfer": 47176,
+        "feat:OK:abandon": 2577,
+        "base:OK:abandon": 4143,
+        "feat:NEUTRAL:abandon": 1507,
+        "base:NEUTRAL:abandon": 1991,
+        "feat:DRIFT:reserve": 1314,
+        "base:DRIFT:transfer_bad": 2068,
+        "feat:DRIFT:reserve->EXECUTED": 1057,
+        "feat:BETTER:transfer": 220,
+        "base:BETTER:transfer": 213,
+        "feat:NEUTRAL:reserve": 1539,
+        "feat:NEUTRAL:reserve->EXPIRED": 1038,
+        "base:DRIFT:switch_informal": 1833,
+        "feat:DRIFT:transfer": 2133,
+        "feat:DRIFT:abandon": 382,
+        "base:DRIFT:abandon": 241,
+        "feat:NEUTRAL:reserve->EXECUTED": 501,
+        "feat:DRIFT:switch_informal": 313,
+        "feat:DRIFT:reserve->EXPIRED": 257,
+        "feat:BETTER:abandon": 9,
+        "base:BETTER:abandon": 16
+      },
+      "reserve_out": {
+        "DRIFT:EXECUTED": 1057,
+        "NEUTRAL:EXPIRED": 1038,
+        "NEUTRAL:EXECUTED": 501,
+        "DRIFT:EXPIRED": 257
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 1057,
+          "wait_median": 1,
+          "gain_median": 0.0,
+          "gain_mean": 50.4,
+          "gain_share_positive": 0.33
+        },
+        "NEUTRAL": {
+          "executed": 501,
+          "wait_median": 4,
+          "gain_median": 258.2,
+          "gain_mean": 219.7,
+          "gain_share_positive": 0.9
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 8228
+      }
+    },
+    "weights_settling": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5960821571.562534,
+        "flowB_events": 73873.0,
+        "push_sent": 41353.0,
+        "base_flowB_volume_rub": 2459466944.485614,
+        "feat_flowB_volume_rub": 2551097778.194887,
+        "user_save_signal_rub": 14238492.448309207,
+        "user_save_events": 38828.0,
+        "user_save_positive_noorder": 28269.0,
+        "user_save_positive_order": 28432.0,
+        "user_save_reserve_rub": 526922.8966976375,
+        "user_save_reserve_n": 1394.0,
+        "timing_shift_events": 674.0,
+        "timing_shift_volume_rub": 17302262.4613884,
+        "base_switch_volume_rub": 38771609.32159717,
+        "eff_retained_volume_rub": 32134029.482970007,
+        "eff_retained_sends": 1252.0,
+        "eff_recovered_volume_rub": 20420516.018783186,
+        "eff_recovered_sends": 589.0
+      },
+      "per_portrait": {
+        "P5_farrukh": {
+          "flowA_volume_rub": 3150285494.5800095,
+          "flowA_remit_rub": 1748798346.3414583,
+          "flowB_events": 11897.0,
+          "state_OK": 8545.0,
+          "base_flowB_volume_rub": 819244553.272848,
+          "feat_flowB_volume_rub": 849859419.8247311,
+          "user_save_signal_rub": 3078210.858760882,
+          "user_save_events": 6827.0,
+          "state_NEUTRAL": 3352.0,
+          "user_save_reserve_rub": 190282.7736515071
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 2738546486.290968,
+          "flowA_remit_rub": 1477553019.0063672,
+          "flowB_events": 22146.0,
+          "state_NEUTRAL": 7679.0,
+          "base_flowB_volume_rub": 482655789.46124494,
+          "feat_flowB_volume_rub": 517533405.05981123,
+          "state_OK": 10732.0,
+          "state_DRIFT": 3550.0,
+          "user_save_signal_rub": 4541304.850441821,
+          "user_save_events": 10579.0,
+          "user_save_reserve_rub": 203408.11402715312,
+          "eff_retained_volume_rub": 31726932.488895565,
+          "state_BETTER": 185.0
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 2765170874.614892,
+          "flowA_remit_rub": 1507107992.3628504,
+          "flowB_events": 19305.0,
+          "state_OK": 13648.0,
+          "base_flowB_volume_rub": 394007382.31409377,
+          "feat_flowB_volume_rub": 404054894.6900198,
+          "user_save_signal_rub": 1613133.2328107595,
+          "user_save_events": 10371.0,
+          "state_NEUTRAL": 5657.0,
+          "user_save_reserve_rub": 45645.72200966148
+        },
+        "P3_ainura": {
+          "flowA_volume_rub": 1718889856.7743256,
+          "flowA_remit_rub": 947743802.2205586,
+          "flowB_events": 18477.0,
+          "state_OK": 13307.0,
+          "base_flowB_volume_rub": 491293569.33974963,
+          "feat_flowB_volume_rub": 501465232.7052407,
+          "user_save_signal_rub": 2728319.490641804,
+          "user_save_events": 10016.0,
+          "state_NEUTRAL": 5170.0,
+          "user_save_reserve_rub": 22107.236614235993
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 505205498.0217269,
+          "flowA_remit_rub": 279618411.6313189,
+          "flowB_events": 2048.0,
+          "state_OK": 1261.0,
+          "base_flowB_volume_rub": 272265650.097711,
+          "feat_flowB_volume_rub": 278184825.9151069,
+          "user_save_signal_rub": 2277524.015653991,
+          "user_save_events": 1035.0,
+          "state_NEUTRAL": 777.0,
+          "state_DRIFT": 10.0,
+          "user_save_reserve_rub": 65479.05039508044,
+          "eff_retained_volume_rub": 407096.9940744359
+        }
+      },
+      "state_counts": {
+        "OK": 47493,
+        "NEUTRAL": 22635,
+        "DRIFT": 3560,
+        "BETTER": 185
+      },
+      "decision_counts": {
+        "feat:OK:transfer": 45147,
+        "base:OK:transfer": 43684,
+        "feat:NEUTRAL:transfer": 19885,
+        "base:NEUTRAL:transfer": 20780,
+        "feat:DRIFT:reserve": 1152,
+        "base:DRIFT:transfer_bad": 1864,
+        "feat:DRIFT:reserve->EXECUTED": 939,
+        "feat:NEUTRAL:reserve": 1394,
+        "feat:NEUTRAL:reserve->EXECUTED": 455,
+        "feat:DRIFT:transfer": 1827,
+        "feat:DRIFT:reserve->EXPIRED": 213,
+        "base:OK:abandon": 3809,
+        "feat:OK:abandon": 2346,
+        "base:NEUTRAL:abandon": 1855,
+        "feat:NEUTRAL:reserve->EXPIRED": 939,
+        "feat:NEUTRAL:abandon": 1356,
+        "base:DRIFT:switch_informal": 1509,
+        "feat:DRIFT:abandon": 324,
+        "feat:BETTER:transfer": 179,
+        "base:BETTER:transfer": 173,
+        "base:DRIFT:abandon": 187,
+        "feat:DRIFT:switch_informal": 257,
+        "base:BETTER:abandon": 12,
+        "feat:BETTER:abandon": 6
+      },
+      "reserve_out": {
+        "DRIFT:EXECUTED": 939,
+        "NEUTRAL:EXECUTED": 455,
+        "DRIFT:EXPIRED": 213,
+        "NEUTRAL:EXPIRED": 939
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 939,
+          "wait_median": 1,
+          "gain_median": 0.0,
+          "gain_mean": 47.9,
+          "gain_share_positive": 0.31
+        },
+        "NEUTRAL": {
+          "executed": 455,
+          "wait_median": 4,
+          "gain_median": 230.2,
+          "gain_mean": 204.8,
+          "gain_share_positive": 0.82
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 7603
+      }
+    },
+    "weights_eaeu_focus": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5963082746.409539,
+        "flowB_events": 84660.0,
+        "base_flowB_volume_rub": 2919840424.5452194,
+        "feat_flowB_volume_rub": 3009178082.7700925,
+        "push_sent": 47455.0,
+        "user_save_signal_rub": 19716849.057090137,
+        "user_save_events": 44621.0,
+        "user_save_positive_noorder": 33238.0,
+        "user_save_positive_order": 33350.0,
+        "base_switch_volume_rub": 33717987.0477524,
+        "eff_retained_volume_rub": 27707112.42097688,
+        "eff_retained_sends": 1025.0,
+        "user_save_reserve_rub": 498313.74198928924,
+        "user_save_reserve_n": 1021.0,
+        "timing_shift_events": 445.0,
+        "timing_shift_volume_rub": 12062390.483478151,
+        "eff_recovered_volume_rub": 15176869.07818375,
+        "eff_recovered_sends": 417.0
+      },
+      "per_portrait": {
+        "P4_ashot": {
+          "flowA_volume_rub": 1644650892.4319987,
+          "flowA_remit_rub": 900288042.0798076,
+          "flowB_events": 6656.0,
+          "state_NEUTRAL": 2468.0,
+          "base_flowB_volume_rub": 852422800.1967684,
+          "feat_flowB_volume_rub": 874362404.5059944,
+          "state_OK": 4143.0,
+          "user_save_signal_rub": 7468449.799623757,
+          "user_save_events": 3399.0,
+          "user_save_reserve_rub": 185889.6189308874,
+          "state_DRIFT": 41.0,
+          "eff_retained_volume_rub": 2027876.5458320405,
+          "state_BETTER": 4.0
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 2149875969.8513412,
+          "flowA_remit_rub": 1163086050.7509708,
+          "flowB_events": 17397.0,
+          "state_NEUTRAL": 6114.0,
+          "base_flowB_volume_rub": 377311760.49602497,
+          "state_OK": 8374.0,
+          "feat_flowB_volume_rub": 406173841.7197196,
+          "user_save_signal_rub": 3493181.645574117,
+          "user_save_events": 8165.0,
+          "state_DRIFT": 2751.0,
+          "eff_retained_volume_rub": 25679235.875144836,
+          "user_save_reserve_rub": 148422.77395233855,
+          "state_BETTER": 158.0
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1043456877.5748065,
+          "flowA_remit_rub": 588183040.6364523,
+          "flowB_events": 4086.0,
+          "state_OK": 2909.0,
+          "base_flowB_volume_rub": 290585970.71989906,
+          "feat_flowB_volume_rub": 300431740.36616594,
+          "user_save_signal_rub": 1270078.4692444524,
+          "user_save_events": 2349.0,
+          "state_NEUTRAL": 1177.0,
+          "user_save_reserve_rub": 65444.31852302667
+        },
+        "P3_ainura": {
+          "flowA_volume_rub": 3808172640.445515,
+          "flowA_remit_rub": 2097023955.2897694,
+          "flowB_events": 41035.0,
+          "state_OK": 29664.0,
+          "base_flowB_volume_rub": 1086274543.2409694,
+          "feat_flowB_volume_rub": 1107024645.20108,
+          "user_save_signal_rub": 6132914.7960013505,
+          "user_save_events": 22380.0,
+          "state_NEUTRAL": 11371.0,
+          "user_save_reserve_rub": 58493.73857452464
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 2231941829.9782677,
+          "flowA_remit_rub": 1214501657.6525466,
+          "flowB_events": 15486.0,
+          "state_OK": 10985.0,
+          "base_flowB_volume_rub": 313245349.8915866,
+          "feat_flowB_volume_rub": 321185450.9771661,
+          "user_save_signal_rub": 1352224.346646439,
+          "user_save_events": 8328.0,
+          "state_NEUTRAL": 4501.0,
+          "user_save_reserve_rub": 40063.29200851147
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 25631,
+        "OK": 56075,
+        "DRIFT": 2792,
+        "BETTER": 162
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 22526,
+        "base:NEUTRAL:transfer": 23558,
+        "feat:OK:transfer": 53224,
+        "base:OK:transfer": 51494,
+        "feat:OK:abandon": 2851,
+        "base:OK:abandon": 4581,
+        "feat:NEUTRAL:reserve": 1358,
+        "feat:NEUTRAL:reserve->EXPIRED": 1000,
+        "feat:DRIFT:transfer": 1461,
+        "base:DRIFT:switch_informal": 1249,
+        "feat:NEUTRAL:abandon": 1747,
+        "base:NEUTRAL:abandon": 2073,
+        "feat:DRIFT:reserve": 815,
+        "base:DRIFT:transfer_bad": 1367,
+        "feat:DRIFT:reserve->EXECUTED": 663,
+        "feat:BETTER:transfer": 157,
+        "base:BETTER:transfer": 153,
+        "feat:DRIFT:switch_informal": 224,
+        "feat:DRIFT:abandon": 292,
+        "base:DRIFT:abandon": 176,
+        "feat:NEUTRAL:reserve->EXECUTED": 358,
+        "feat:DRIFT:reserve->EXPIRED": 152,
+        "base:BETTER:abandon": 9,
+        "feat:BETTER:abandon": 5
+      },
+      "reserve_out": {
+        "NEUTRAL:EXPIRED": 1000,
+        "DRIFT:EXECUTED": 663,
+        "NEUTRAL:EXECUTED": 358,
+        "DRIFT:EXPIRED": 152
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 663,
+          "wait_median": 1,
+          "gain_median": 0.0,
+          "gain_mean": 47.4,
+          "gain_share_positive": 0.31
+        },
+        "NEUTRAL": {
+          "executed": 358,
+          "wait_median": 5.0,
+          "gain_median": 307.3,
+          "gain_mean": 242.2,
+          "gain_share_positive": 0.89
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 10110
+      }
+    },
+    "share_center": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5938672195.310693,
+        "flowB_events": 79270.0,
+        "base_flowB_volume_rub": 2283900376.057572,
+        "feat_flowB_volume_rub": 2372672919.468897,
+        "push_sent": 43885.0,
+        "user_save_signal_rub": 14443093.851962129,
+        "user_save_events": 41131.0,
+        "user_save_positive_noorder": 30290.0,
+        "user_save_positive_order": 30472.0,
+        "user_save_reserve_rub": 502693.9091975404,
+        "user_save_reserve_n": 1499.0,
+        "timing_shift_events": 733.0,
+        "timing_shift_volume_rub": 19300253.332164988,
+        "base_switch_volume_rub": 49647837.01404727,
+        "eff_retained_volume_rub": 42160863.40615103,
+        "eff_retained_sends": 1631.0,
+        "eff_recovered_volume_rub": 18953628.547370538,
+        "eff_recovered_sends": 628.0
+      },
+      "per_portrait": {
+        "P3_ainura": {
+          "flowA_volume_rub": 1529411790.0181742,
+          "flowA_remit_rub": 839632181.3613734,
+          "flowB_events": 16711.0,
+          "state_NEUTRAL": 4695.0,
+          "base_flowB_volume_rub": 442130283.61380595,
+          "feat_flowB_volume_rub": 451318806.3767482,
+          "state_OK": 12016.0,
+          "user_save_signal_rub": 2488111.7199423355,
+          "user_save_events": 9054.0,
+          "user_save_reserve_rub": 33890.25384676253
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 3816628221.036061,
+          "flowA_remit_rub": 2078216063.6320136,
+          "flowB_events": 26552.0,
+          "state_OK": 18816.0,
+          "base_flowB_volume_rub": 542004511.2313777,
+          "feat_flowB_volume_rub": 554616543.5315332,
+          "user_save_signal_rub": 2176754.4732411834,
+          "user_save_events": 14347.0,
+          "state_NEUTRAL": 7736.0,
+          "user_save_reserve_rub": 63559.92343513212
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1583016995.778092,
+          "flowA_remit_rub": 881560734.1189518,
+          "flowB_events": 5861.0,
+          "state_OK": 4198.0,
+          "base_flowB_volume_rub": 403928460.1066042,
+          "feat_flowB_volume_rub": 418717286.68838066,
+          "user_save_signal_rub": 1630879.7053486733,
+          "user_save_events": 3337.0,
+          "state_NEUTRAL": 1662.0,
+          "user_save_reserve_rub": 112930.49729538999,
+          "state_DRIFT": 1.0,
+          "eff_retained_volume_rub": 33601.74797633332
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 3405978996.644114,
+          "flowA_remit_rub": 1841194309.2530482,
+          "flowB_events": 27908.0,
+          "state_OK": 13688.0,
+          "base_flowB_volume_rub": 607248157.8996055,
+          "feat_flowB_volume_rub": 652769623.4515853,
+          "user_save_signal_rub": 5654305.24737025,
+          "user_save_events": 13289.0,
+          "state_DRIFT": 4330.0,
+          "user_save_reserve_rub": 229193.92429191616,
+          "state_NEUTRAL": 9659.0,
+          "state_BETTER": 231.0,
+          "eff_retained_volume_rub": 41590323.427901216
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 543062206.8054796,
+          "flowA_remit_rub": 298068906.94530386,
+          "flowB_events": 2238.0,
+          "state_NEUTRAL": 856.0,
+          "base_flowB_volume_rub": 288588963.20619386,
+          "feat_flowB_volume_rub": 295250659.4206436,
+          "state_OK": 1364.0,
+          "user_save_signal_rub": 2493042.7060595783,
+          "user_save_events": 1104.0,
+          "state_DRIFT": 17.0,
+          "state_BETTER": 1.0,
+          "user_save_reserve_rub": 63119.31032834038,
+          "eff_retained_volume_rub": 536938.2302735004
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 24608,
+        "OK": 50082,
+        "DRIFT": 4348,
+        "BETTER": 232
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 21579,
+        "base:NEUTRAL:transfer": 22569,
+        "feat:OK:transfer": 47609,
+        "base:OK:transfer": 46107,
+        "feat:OK:abandon": 2473,
+        "base:OK:abandon": 3975,
+        "feat:NEUTRAL:abandon": 1592,
+        "base:NEUTRAL:abandon": 2039,
+        "feat:DRIFT:reserve": 1342,
+        "base:DRIFT:transfer_bad": 2174,
+        "feat:DRIFT:reserve->EXECUTED": 1064,
+        "feat:BETTER:transfer": 221,
+        "base:BETTER:transfer": 212,
+        "feat:NEUTRAL:reserve": 1437,
+        "feat:NEUTRAL:reserve->EXPIRED": 1002,
+        "base:DRIFT:switch_informal": 1932,
+        "feat:DRIFT:transfer": 2294,
+        "feat:DRIFT:abandon": 411,
+        "base:DRIFT:abandon": 242,
+        "feat:DRIFT:reserve->EXPIRED": 278,
+        "feat:NEUTRAL:reserve->EXECUTED": 435,
+        "feat:DRIFT:switch_informal": 301,
+        "base:BETTER:abandon": 20,
+        "feat:BETTER:abandon": 11
+      },
+      "reserve_out": {
+        "DRIFT:EXECUTED": 1064,
+        "NEUTRAL:EXPIRED": 1002,
+        "DRIFT:EXPIRED": 278,
+        "NEUTRAL:EXECUTED": 435
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 1064,
+          "wait_median": 1.0,
+          "gain_median": 0.0,
+          "gain_mean": 50.1,
+          "gain_share_positive": 0.32
+        },
+        "NEUTRAL": {
+          "executed": 435,
+          "wait_median": 4,
+          "gain_median": 265.3,
+          "gain_mean": 218.1,
+          "gain_share_positive": 0.86
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 8318
+      }
+    },
+    "share_tail": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 7759582976.437437,
+        "flowB_events": 79270.0,
+        "base_flowB_volume_rub": 3027109094.92758,
+        "feat_flowB_volume_rub": 3142346247.6150284,
+        "push_sent": 43885.0,
+        "user_save_signal_rub": 18986301.25700699,
+        "user_save_events": 41131.0,
+        "user_save_positive_noorder": 30290.0,
+        "user_save_positive_order": 30472.0,
+        "user_save_reserve_rub": 661664.3203049462,
+        "user_save_reserve_n": 1499.0,
+        "timing_shift_events": 733.0,
+        "timing_shift_volume_rub": 23898684.900520395,
+        "base_switch_volume_rub": 61168429.013475746,
+        "eff_retained_volume_rub": 51955034.18986481,
+        "eff_retained_sends": 1631.0,
+        "eff_recovered_volume_rub": 24260722.96645447,
+        "eff_recovered_sends": 628.0
+      },
+      "per_portrait": {
+        "P3_ainura": {
+          "flowA_volume_rub": 1529411790.0181742,
+          "flowA_remit_rub": 1132770371.7432315,
+          "flowB_events": 16711.0,
+          "state_NEUTRAL": 4695.0,
+          "base_flowB_volume_rub": 596578561.2382362,
+          "feat_flowB_volume_rub": 608975754.944492,
+          "state_OK": 12016.0,
+          "user_save_signal_rub": 3357435.8254134436,
+          "user_save_events": 9054.0,
+          "user_save_reserve_rub": 45885.27119547434
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 3816628221.036061,
+          "flowA_remit_rub": 2673610066.1136456,
+          "flowB_events": 26552.0,
+          "state_OK": 18816.0,
+          "base_flowB_volume_rub": 697370404.1084912,
+          "feat_flowB_volume_rub": 713588674.3636694,
+          "user_save_signal_rub": 2803288.2701999433,
+          "user_save_events": 14347.0,
+          "state_NEUTRAL": 7736.0,
+          "user_save_reserve_rub": 81886.09871967521
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1583016995.778092,
+          "flowA_remit_rub": 1268713194.0852857,
+          "flowB_events": 5861.0,
+          "state_OK": 4198.0,
+          "base_flowB_volume_rub": 579312322.8984158,
+          "feat_flowB_volume_rub": 600542785.373736,
+          "user_save_signal_rub": 2349581.665142228,
+          "user_save_events": 3337.0,
+          "state_NEUTRAL": 1662.0,
+          "user_save_reserve_rub": 164150.54124642804,
+          "state_DRIFT": 1.0,
+          "eff_retained_volume_rub": 50298.606523596514
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 3405978996.644114,
+          "flowA_remit_rub": 2264457334.0406857,
+          "flowB_events": 27908.0,
+          "state_OK": 13688.0,
+          "base_flowB_volume_rub": 746883049.2627052,
+          "feat_flowB_volume_rub": 802870074.194968,
+          "user_save_signal_rub": 6954185.598568001,
+          "user_save_events": 13289.0,
+          "state_DRIFT": 4330.0,
+          "user_save_reserve_rub": 280650.6835049511,
+          "state_NEUTRAL": 9659.0,
+          "state_BETTER": 231.0,
+          "eff_retained_volume_rub": 51136662.30198822
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 543062206.8054796,
+          "flowA_remit_rub": 420032010.45459414,
+          "flowB_events": 2238.0,
+          "state_NEUTRAL": 856.0,
+          "base_flowB_volume_rub": 406964757.4197471,
+          "feat_flowB_volume_rub": 416368958.7381958,
+          "state_OK": 1364.0,
+          "user_save_signal_rub": 3521809.8976832377,
+          "user_save_events": 1104.0,
+          "state_DRIFT": 17.0,
+          "state_BETTER": 1.0,
+          "user_save_reserve_rub": 89091.7256384177,
+          "eff_retained_volume_rub": 768073.2813529951
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 24608,
+        "OK": 50082,
+        "DRIFT": 4348,
+        "BETTER": 232
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 21579,
+        "base:NEUTRAL:transfer": 22569,
+        "feat:OK:transfer": 47609,
+        "base:OK:transfer": 46107,
+        "feat:OK:abandon": 2473,
+        "base:OK:abandon": 3975,
+        "feat:NEUTRAL:abandon": 1592,
+        "base:NEUTRAL:abandon": 2039,
+        "feat:DRIFT:reserve": 1342,
+        "base:DRIFT:transfer_bad": 2174,
+        "feat:DRIFT:reserve->EXECUTED": 1064,
+        "feat:BETTER:transfer": 221,
+        "base:BETTER:transfer": 212,
+        "feat:NEUTRAL:reserve": 1437,
+        "feat:NEUTRAL:reserve->EXPIRED": 1002,
+        "base:DRIFT:switch_informal": 1932,
+        "feat:DRIFT:transfer": 2294,
+        "feat:DRIFT:abandon": 411,
+        "base:DRIFT:abandon": 242,
+        "feat:DRIFT:reserve->EXPIRED": 278,
+        "feat:NEUTRAL:reserve->EXECUTED": 435,
+        "feat:DRIFT:switch_informal": 301,
+        "base:BETTER:abandon": 20,
+        "feat:BETTER:abandon": 11
+      },
+      "reserve_out": {
+        "DRIFT:EXECUTED": 1064,
+        "NEUTRAL:EXPIRED": 1002,
+        "DRIFT:EXPIRED": 278,
+        "NEUTRAL:EXECUTED": 435
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 1064,
+          "wait_median": 1.0,
+          "gain_median": 0.0,
+          "gain_mean": 50.1,
+          "gain_share_positive": 0.32
+        },
+        "NEUTRAL": {
+          "executed": 435,
+          "wait_median": 4,
+          "gain_median": 265.3,
+          "gain_mean": 218.1,
+          "gain_share_positive": 0.86
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 8318
+      }
+    },
+    "thr_10": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5938672195.310693,
+        "flowB_events": 79270.0,
+        "base_flowB_volume_rub": 2227224855.0395675,
+        "feat_flowB_volume_rub": 2352660243.7037163,
+        "push_sent": 43885.0,
+        "user_save_signal_rub": 14169079.353624232,
+        "user_save_events": 40496.0,
+        "user_save_positive_noorder": 29753.0,
+        "user_save_positive_order": 30112.0,
+        "user_save_reserve_rub": 705823.2180759978,
+        "user_save_reserve_n": 2539.0,
+        "timing_shift_events": 1467.0,
+        "timing_shift_volume_rub": 44199509.96751922,
+        "base_switch_volume_rub": 110039545.9998576,
+        "eff_retained_volume_rub": 91882968.49847692,
+        "eff_retained_sends": 3217.0,
+        "eff_recovered_volume_rub": 33478200.85352347,
+        "eff_recovered_sends": 1100.0
+      },
+      "per_portrait": {
+        "P3_ainura": {
+          "flowA_volume_rub": 1529411790.0181742,
+          "flowA_remit_rub": 839632181.3613734,
+          "flowB_events": 16711.0,
+          "state_NEUTRAL": 4695.0,
+          "base_flowB_volume_rub": 442046510.53245956,
+          "feat_flowB_volume_rub": 450210827.7068727,
+          "state_OK": 11795.0,
+          "user_save_signal_rub": 2474680.339475172,
+          "user_save_events": 9016.0,
+          "state_DRIFT": 178.0,
+          "state_BETTER": 43.0,
+          "user_save_reserve_rub": 42849.04863113304
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 3816628221.036061,
+          "flowA_remit_rub": 2078216063.6320136,
+          "flowB_events": 26552.0,
+          "state_OK": 18752.0,
+          "base_flowB_volume_rub": 541583131.6866764,
+          "feat_flowB_volume_rub": 554445165.626565,
+          "user_save_signal_rub": 2177856.7259744005,
+          "user_save_events": 14338.0,
+          "state_NEUTRAL": 7736.0,
+          "state_DRIFT": 52.0,
+          "user_save_reserve_rub": 65815.30428064843,
+          "state_BETTER": 12.0,
+          "eff_retained_volume_rub": 326401.95597852016
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1583016995.778092,
+          "flowA_remit_rub": 881560734.1189518,
+          "flowB_events": 5861.0,
+          "state_OK": 4016.0,
+          "base_flowB_volume_rub": 399457132.4519938,
+          "feat_flowB_volume_rub": 417484829.2722894,
+          "user_save_signal_rub": 1629333.545081187,
+          "user_save_events": 3321.0,
+          "state_NEUTRAL": 1662.0,
+          "user_save_reserve_rub": 150280.62306946339,
+          "state_DRIFT": 158.0,
+          "eff_retained_volume_rub": 4398971.18481016,
+          "state_BETTER": 25.0
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 3405978996.644114,
+          "flowA_remit_rub": 1841194309.2530482,
+          "flowB_events": 27908.0,
+          "state_OK": 9139.0,
+          "base_flowB_volume_rub": 564454409.304203,
+          "feat_flowB_volume_rub": 638693664.6851231,
+          "user_save_signal_rub": 5424053.650418283,
+          "user_save_events": 12741.0,
+          "state_DRIFT": 8102.0,
+          "user_save_reserve_rub": 333970.49510085257,
+          "state_NEUTRAL": 9659.0,
+          "state_BETTER": 1008.0,
+          "eff_retained_volume_rub": 78732242.18629934
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 543062206.8054796,
+          "flowA_remit_rub": 298068906.94530386,
+          "flowB_events": 2238.0,
+          "state_NEUTRAL": 856.0,
+          "base_flowB_volume_rub": 279683671.06424713,
+          "feat_flowB_volume_rub": 291825756.412868,
+          "state_OK": 1139.0,
+          "user_save_signal_rub": 2463155.0926750856,
+          "user_save_events": 1080.0,
+          "state_DRIFT": 204.0,
+          "state_BETTER": 39.0,
+          "eff_retained_volume_rub": 8425353.171389004,
+          "user_save_reserve_rub": 112907.74699390023
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 24608,
+        "OK": 44841,
+        "DRIFT": 8694,
+        "BETTER": 1127
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 21579,
+        "base:NEUTRAL:transfer": 22569,
+        "feat:OK:transfer": 42636,
+        "base:OK:transfer": 41294,
+        "feat:OK:abandon": 2205,
+        "base:OK:abandon": 3547,
+        "feat:NEUTRAL:abandon": 1592,
+        "base:NEUTRAL:abandon": 2039,
+        "feat:DRIFT:reserve": 2672,
+        "base:DRIFT:transfer_bad": 4351,
+        "feat:DRIFT:reserve->EXECUTED": 2104,
+        "feat:DRIFT:switch_informal": 636,
+        "base:DRIFT:switch_informal": 3853,
+        "feat:DRIFT:transfer": 4579,
+        "feat:BETTER:transfer": 1071,
+        "base:BETTER:transfer": 1026,
+        "feat:NEUTRAL:reserve": 1437,
+        "feat:NEUTRAL:reserve->EXPIRED": 1002,
+        "feat:DRIFT:abandon": 807,
+        "base:DRIFT:abandon": 490,
+        "feat:DRIFT:reserve->EXPIRED": 568,
+        "feat:NEUTRAL:reserve->EXECUTED": 435,
+        "base:BETTER:abandon": 101,
+        "feat:BETTER:abandon": 56
+      },
+      "reserve_out": {
+        "DRIFT:EXECUTED": 2104,
+        "NEUTRAL:EXPIRED": 1002,
+        "DRIFT:EXPIRED": 568,
+        "NEUTRAL:EXECUTED": 435
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 2104,
+          "wait_median": 1.0,
+          "gain_median": 0.0,
+          "gain_mean": 50.4,
+          "gain_share_positive": 0.32
+        },
+        "NEUTRAL": {
+          "executed": 435,
+          "wait_median": 4,
+          "gain_median": 265.3,
+          "gain_mean": 218.1,
+          "gain_share_positive": 0.86
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 8318
+      }
+    },
+    "thr_20": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5938672195.310693,
+        "flowB_events": 79270.0,
+        "base_flowB_volume_rub": 2283900376.057572,
+        "feat_flowB_volume_rub": 2372672919.468897,
+        "push_sent": 43885.0,
+        "user_save_signal_rub": 14443093.851962129,
+        "user_save_events": 41131.0,
+        "user_save_positive_noorder": 30290.0,
+        "user_save_positive_order": 30472.0,
+        "user_save_reserve_rub": 502693.9091975404,
+        "user_save_reserve_n": 1499.0,
+        "timing_shift_events": 733.0,
+        "timing_shift_volume_rub": 19300253.332164988,
+        "base_switch_volume_rub": 49647837.01404727,
+        "eff_retained_volume_rub": 42160863.40615103,
+        "eff_retained_sends": 1631.0,
+        "eff_recovered_volume_rub": 18953628.547370538,
+        "eff_recovered_sends": 628.0
+      },
+      "per_portrait": {
+        "P3_ainura": {
+          "flowA_volume_rub": 1529411790.0181742,
+          "flowA_remit_rub": 839632181.3613734,
+          "flowB_events": 16711.0,
+          "state_NEUTRAL": 4695.0,
+          "base_flowB_volume_rub": 442130283.61380595,
+          "feat_flowB_volume_rub": 451318806.3767482,
+          "state_OK": 12016.0,
+          "user_save_signal_rub": 2488111.7199423355,
+          "user_save_events": 9054.0,
+          "user_save_reserve_rub": 33890.25384676253
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 3816628221.036061,
+          "flowA_remit_rub": 2078216063.6320136,
+          "flowB_events": 26552.0,
+          "state_OK": 18816.0,
+          "base_flowB_volume_rub": 542004511.2313777,
+          "feat_flowB_volume_rub": 554616543.5315332,
+          "user_save_signal_rub": 2176754.4732411834,
+          "user_save_events": 14347.0,
+          "state_NEUTRAL": 7736.0,
+          "user_save_reserve_rub": 63559.92343513212
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1583016995.778092,
+          "flowA_remit_rub": 881560734.1189518,
+          "flowB_events": 5861.0,
+          "state_OK": 4198.0,
+          "base_flowB_volume_rub": 403928460.1066042,
+          "feat_flowB_volume_rub": 418717286.68838066,
+          "user_save_signal_rub": 1630879.7053486733,
+          "user_save_events": 3337.0,
+          "state_NEUTRAL": 1662.0,
+          "user_save_reserve_rub": 112930.49729538999,
+          "state_DRIFT": 1.0,
+          "eff_retained_volume_rub": 33601.74797633332
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 3405978996.644114,
+          "flowA_remit_rub": 1841194309.2530482,
+          "flowB_events": 27908.0,
+          "state_OK": 13688.0,
+          "base_flowB_volume_rub": 607248157.8996055,
+          "feat_flowB_volume_rub": 652769623.4515853,
+          "user_save_signal_rub": 5654305.24737025,
+          "user_save_events": 13289.0,
+          "state_DRIFT": 4330.0,
+          "user_save_reserve_rub": 229193.92429191616,
+          "state_NEUTRAL": 9659.0,
+          "state_BETTER": 231.0,
+          "eff_retained_volume_rub": 41590323.427901216
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 543062206.8054796,
+          "flowA_remit_rub": 298068906.94530386,
+          "flowB_events": 2238.0,
+          "state_NEUTRAL": 856.0,
+          "base_flowB_volume_rub": 288588963.20619386,
+          "feat_flowB_volume_rub": 295250659.4206436,
+          "state_OK": 1364.0,
+          "user_save_signal_rub": 2493042.7060595783,
+          "user_save_events": 1104.0,
+          "state_DRIFT": 17.0,
+          "state_BETTER": 1.0,
+          "user_save_reserve_rub": 63119.31032834038,
+          "eff_retained_volume_rub": 536938.2302735004
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 24608,
+        "OK": 50082,
+        "DRIFT": 4348,
+        "BETTER": 232
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 21579,
+        "base:NEUTRAL:transfer": 22569,
+        "feat:OK:transfer": 47609,
+        "base:OK:transfer": 46107,
+        "feat:OK:abandon": 2473,
+        "base:OK:abandon": 3975,
+        "feat:NEUTRAL:abandon": 1592,
+        "base:NEUTRAL:abandon": 2039,
+        "feat:DRIFT:reserve": 1342,
+        "base:DRIFT:transfer_bad": 2174,
+        "feat:DRIFT:reserve->EXECUTED": 1064,
+        "feat:BETTER:transfer": 221,
+        "base:BETTER:transfer": 212,
+        "feat:NEUTRAL:reserve": 1437,
+        "feat:NEUTRAL:reserve->EXPIRED": 1002,
+        "base:DRIFT:switch_informal": 1932,
+        "feat:DRIFT:transfer": 2294,
+        "feat:DRIFT:abandon": 411,
+        "base:DRIFT:abandon": 242,
+        "feat:DRIFT:reserve->EXPIRED": 278,
+        "feat:NEUTRAL:reserve->EXECUTED": 435,
+        "feat:DRIFT:switch_informal": 301,
+        "base:BETTER:abandon": 20,
+        "feat:BETTER:abandon": 11
+      },
+      "reserve_out": {
+        "DRIFT:EXECUTED": 1064,
+        "NEUTRAL:EXPIRED": 1002,
+        "DRIFT:EXPIRED": 278,
+        "NEUTRAL:EXECUTED": 435
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 1064,
+          "wait_median": 1.0,
+          "gain_median": 0.0,
+          "gain_mean": 50.1,
+          "gain_share_positive": 0.32
+        },
+        "NEUTRAL": {
+          "executed": 435,
+          "wait_median": 4,
+          "gain_median": 265.3,
+          "gain_mean": 218.1,
+          "gain_share_positive": 0.86
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 8318
+      }
+    },
+    "thr_40": {
+      "agg": {
+        "flowA_ops": 480000.0,
+        "flowA_volume_rub": 10878098210.282001,
+        "flowA_remit_rub": 5938672195.310693,
+        "flowB_events": 79270.0,
+        "base_flowB_volume_rub": 2326481863.2875834,
+        "feat_flowB_volume_rub": 2387372101.6900043,
+        "push_sent": 43885.0,
+        "user_save_signal_rub": 14668057.351754265,
+        "user_save_events": 41696.0,
+        "user_save_positive_noorder": 30783.0,
+        "user_save_positive_order": 30803.0,
+        "user_save_reserve_rub": 378108.43886907387,
+        "user_save_reserve_n": 553.0,
+        "timing_shift_events": 70.0,
+        "timing_shift_volume_rub": 1800084.9058398823,
+        "eff_recovered_volume_rub": 8002237.133782883,
+        "eff_recovered_sends": 205.0,
+        "base_switch_volume_rub": 5317211.947991059,
+        "eff_retained_volume_rub": 4669879.720417114,
+        "eff_retained_sends": 181.0
+      },
+      "per_portrait": {
+        "P3_ainura": {
+          "flowA_volume_rub": 1529411790.0181742,
+          "flowA_remit_rub": 839632181.3613734,
+          "flowB_events": 16711.0,
+          "state_NEUTRAL": 4695.0,
+          "base_flowB_volume_rub": 442130283.61380595,
+          "feat_flowB_volume_rub": 451318806.3767482,
+          "state_OK": 12016.0,
+          "user_save_signal_rub": 2488111.7199423355,
+          "user_save_events": 9054.0,
+          "user_save_reserve_rub": 33890.25384676253
+        },
+        "P1_oybek": {
+          "flowA_volume_rub": 3816628221.036061,
+          "flowA_remit_rub": 2078216063.6320136,
+          "flowB_events": 26552.0,
+          "state_OK": 18816.0,
+          "base_flowB_volume_rub": 542004511.2313777,
+          "feat_flowB_volume_rub": 554616543.5315332,
+          "user_save_signal_rub": 2176754.4732411834,
+          "user_save_events": 14347.0,
+          "state_NEUTRAL": 7736.0,
+          "user_save_reserve_rub": 63559.92343513212
+        },
+        "P5_farrukh": {
+          "flowA_volume_rub": 1583016995.778092,
+          "flowA_remit_rub": 881560734.1189518,
+          "flowB_events": 5861.0,
+          "state_OK": 4199.0,
+          "base_flowB_volume_rub": 403962061.8545806,
+          "feat_flowB_volume_rub": 418717286.68838066,
+          "user_save_signal_rub": 1630879.7053486733,
+          "user_save_events": 3337.0,
+          "state_NEUTRAL": 1662.0,
+          "user_save_reserve_rub": 112930.49729538999
+        },
+        "P2_daler": {
+          "flowA_volume_rub": 3405978996.644114,
+          "flowA_remit_rub": 1841194309.2530482,
+          "flowB_events": 27908.0,
+          "state_OK": 17814.0,
+          "base_flowB_volume_rub": 649259105.1513606,
+          "feat_flowB_volume_rub": 667115389.3333437,
+          "user_save_signal_rub": 5873179.736826144,
+          "user_save_events": 13852.0,
+          "state_NEUTRAL": 9659.0,
+          "state_DRIFT": 430.0,
+          "user_save_reserve_rub": 106549.83528215,
+          "eff_retained_volume_rub": 4669879.720417114,
+          "state_BETTER": 5.0
+        },
+        "P4_ashot": {
+          "flowA_volume_rub": 543062206.8054796,
+          "flowA_remit_rub": 298068906.94530386,
+          "flowB_events": 2238.0,
+          "state_NEUTRAL": 856.0,
+          "base_flowB_volume_rub": 289125901.43646735,
+          "feat_flowB_volume_rub": 295604075.75999665,
+          "state_OK": 1382.0,
+          "user_save_signal_rub": 2499131.7163957977,
+          "user_save_events": 1106.0,
+          "user_save_reserve_rub": 61177.92900963934
+        }
+      },
+      "state_counts": {
+        "NEUTRAL": 24608,
+        "OK": 54227,
+        "DRIFT": 430,
+        "BETTER": 5
+      },
+      "decision_counts": {
+        "feat:NEUTRAL:transfer": 21579,
+        "base:NEUTRAL:transfer": 22569,
+        "feat:OK:transfer": 51574,
+        "base:OK:transfer": 49959,
+        "feat:OK:abandon": 2653,
+        "base:OK:abandon": 4268,
+        "feat:NEUTRAL:abandon": 1592,
+        "base:NEUTRAL:abandon": 2039,
+        "feat:NEUTRAL:reserve": 1437,
+        "feat:NEUTRAL:reserve->EXPIRED": 1002,
+        "feat:DRIFT:reserve": 143,
+        "base:DRIFT:transfer_bad": 182,
+        "feat:DRIFT:reserve->EXECUTED": 118,
+        "feat:NEUTRAL:reserve->EXECUTED": 435,
+        "base:DRIFT:switch_informal": 207,
+        "feat:DRIFT:transfer": 211,
+        "feat:DRIFT:switch_informal": 26,
+        "feat:DRIFT:abandon": 50,
+        "feat:DRIFT:reserve->EXPIRED": 25,
+        "base:DRIFT:abandon": 41,
+        "feat:BETTER:transfer": 4,
+        "base:BETTER:transfer": 4,
+        "feat:BETTER:abandon": 1,
+        "base:BETTER:abandon": 1
+      },
+      "reserve_out": {
+        "NEUTRAL:EXPIRED": 1002,
+        "DRIFT:EXECUTED": 118,
+        "NEUTRAL:EXECUTED": 435,
+        "DRIFT:EXPIRED": 25
+      },
+      "reserve_by_origin": {
+        "DRIFT": {
+          "executed": 118,
+          "wait_median": 1.0,
+          "gain_median": 0.0,
+          "gain_mean": 47.0,
+          "gain_share_positive": 0.28
+        },
+        "NEUTRAL": {
+          "executed": 435,
+          "wait_median": 4,
+          "gain_median": 265.3,
+          "gain_mean": 218.1,
+          "gain_share_positive": 0.86
+        }
+      },
+      "push_suppressed": {
+        "cooldown": 8318
+      }
+    }
+  }
+}

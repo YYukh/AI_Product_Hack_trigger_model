@@ -1,0 +1,17 @@
+# Локально и при доступе по IP — слушаем порт 80 без TLS.
+#
+# Нужен домен с автоматическим TLS на VPS? Замените строку ":80" ниже на
+# "ваш.домен.рф" (без http://). Caddy сам получит сертификат Let's Encrypt.
+
+:80 {
+	encode gzip
+
+	@api path /api/*
+	handle @api {
+		reverse_proxy api:8000
+	}
+
+	handle {
+		reverse_proxy web:80
+	}
+}

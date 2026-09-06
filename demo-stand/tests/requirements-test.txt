@@ -1,0 +1,3 @@
+# Ставится поверх образа ml (в нём уже есть pandas/pyarrow/fastapi/httpx/joblib).
+pytest>=8,<9
+respx>=0.21,<1

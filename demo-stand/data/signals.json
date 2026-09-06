@@ -1,0 +1,2440 @@
+{
+  "as_of": "2026-09-06",
+  "model_version": "logistic_meta_trained_2025-09-06_live",
+  "generated_by": "ml-warmup",
+  "signals": [
+    {
+      "date": "2026-03-12",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.626,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.900396,
+        "percentile": 79,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 70
+      }
+    },
+    {
+      "date": "2026-03-12",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.661,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.15944,
+        "percentile": 79,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 192
+      }
+    },
+    {
+      "date": "2026-03-12",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.684,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 8.20119,
+        "percentile": 79,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 43
+      }
+    },
+    {
+      "date": "2026-03-12",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.667,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.006476,
+        "percentile": 79,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 85
+      }
+    },
+    {
+      "date": "2026-03-14",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.637,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.209483,
+        "percentile": 74,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -14
+      }
+    },
+    {
+      "date": "2026-03-22",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.668,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.222512,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 471
+      }
+    },
+    {
+      "date": "2026-03-22",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.647,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.960551,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 470
+      }
+    },
+    {
+      "date": "2026-03-22",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.659,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.174155,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 673
+      }
+    },
+    {
+      "date": "2026-03-22",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.698,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 8.80604,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 552
+      }
+    },
+    {
+      "date": "2026-03-22",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.725,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.00689,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 375
+      }
+    },
+    {
+      "date": "2026-03-25",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.627,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.169752,
+        "percentile": 74,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -218
+      }
+    },
+    {
+      "date": "2026-03-26",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.62,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.006638,
+        "percentile": 42,
+        "window_days": 20,
+        "streak_days": 3,
+        "change_bp": -460
+      }
+    },
+    {
+      "date": "2026-03-27",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.656,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.213996,
+        "percentile": 53,
+        "window_days": 20,
+        "streak_days": 4,
+        "change_bp": -383
+      }
+    },
+    {
+      "date": "2026-04-01",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.662,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 8.46996,
+        "percentile": 37,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": 9
+      }
+    },
+    {
+      "date": "2026-04-04",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.639,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.213108,
+        "percentile": 11,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -94
+      }
+    },
+    {
+      "date": "2026-04-04",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.701,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 8.38,
+        "percentile": 11,
+        "window_days": 20,
+        "streak_days": 5,
+        "change_bp": -149
+      }
+    },
+    {
+      "date": "2026-04-04",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.645,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.006612,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -63
+      }
+    },
+    {
+      "date": "2026-04-08",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.631,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 8.22213,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 7,
+        "change_bp": -237
+      }
+    },
+    {
+      "date": "2026-04-08",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.635,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.006466,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 3,
+        "change_bp": -295
+      }
+    },
+    {
+      "date": "2026-04-11",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.662,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.16376,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -299
+      }
+    },
+    {
+      "date": "2026-04-11",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.689,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 8.15906,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -203
+      }
+    },
+    {
+      "date": "2026-04-11",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.707,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.006381,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 6,
+        "change_bp": -259
+      }
+    },
+    {
+      "date": "2026-04-12",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.657,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.204861,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 3,
+        "change_bp": -314
+      }
+    },
+    {
+      "date": "2026-04-12",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.8,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 8.08169,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 3,
+        "change_bp": -296
+      }
+    },
+    {
+      "date": "2026-04-15",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.638,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 8.01903,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 4,
+        "change_bp": -218
+      }
+    },
+    {
+      "date": "2026-04-15",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.699,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.006288,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 8,
+        "change_bp": -180
+      }
+    },
+    {
+      "date": "2026-04-15",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.936,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 8.01903,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 4,
+        "change_bp": -218
+      }
+    },
+    {
+      "date": "2026-04-16",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.618,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.202173,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 5,
+        "change_bp": -232
+      }
+    },
+    {
+      "date": "2026-04-16",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.866,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.202173,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 5,
+        "change_bp": -232
+      }
+    },
+    {
+      "date": "2026-04-16",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.868,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.006247,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 9,
+        "change_bp": -209
+      }
+    },
+    {
+      "date": "2026-04-17",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.628,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.860316,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 6,
+        "change_bp": -226
+      }
+    },
+    {
+      "date": "2026-04-17",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.667,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.157734,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -167
+      }
+    },
+    {
+      "date": "2026-04-18",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.915,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.870053,
+        "percentile": 11,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -115
+      }
+    },
+    {
+      "date": "2026-04-19",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.936,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 8.03473,
+        "percentile": 21,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -58
+      }
+    },
+    {
+      "date": "2026-04-22",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.663,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.160242,
+        "percentile": 11,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 159
+      }
+    },
+    {
+      "date": "2026-04-22",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.623,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 7.95519,
+        "percentile": 5,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 27
+      }
+    },
+    {
+      "date": "2026-04-22",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.678,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.006219,
+        "percentile": 5,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 77
+      }
+    },
+    {
+      "date": "2026-04-22",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.797,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.201789,
+        "percentile": 5,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 44
+      }
+    },
+    {
+      "date": "2026-04-22",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "fast",
+      "strength": 0.784,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.860343,
+        "percentile": 5,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": 0
+      }
+    },
+    {
+      "date": "2026-04-22",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.935,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 7.95519,
+        "percentile": 5,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 27
+      }
+    },
+    {
+      "date": "2026-04-22",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.856,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.006219,
+        "percentile": 5,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 77
+      }
+    },
+    {
+      "date": "2026-04-25",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.63,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.201261,
+        "percentile": 11,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -108
+      }
+    },
+    {
+      "date": "2026-04-25",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.666,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 7.93053,
+        "percentile": 5,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -130
+      }
+    },
+    {
+      "date": "2026-04-25",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.954,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.201261,
+        "percentile": 11,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -108
+      }
+    },
+    {
+      "date": "2026-04-25",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.938,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.856085,
+        "percentile": 5,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -156
+      }
+    },
+    {
+      "date": "2026-04-26",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "fast",
+      "strength": 0.96,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 8.00866,
+        "percentile": 32,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -32
+      }
+    },
+    {
+      "date": "2026-04-29",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.633,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.160926,
+        "percentile": 42,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -28
+      }
+    },
+    {
+      "date": "2026-04-29",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.615,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 7.93939,
+        "percentile": 16,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -2
+      }
+    },
+    {
+      "date": "2026-04-29",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "fast",
+      "strength": 0.9,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.201335,
+        "percentile": 16,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -4
+      }
+    },
+    {
+      "date": "2026-04-29",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.944,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 7.93939,
+        "percentile": 16,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -2
+      }
+    },
+    {
+      "date": "2026-04-29",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.93,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.006196,
+        "percentile": 11,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -51
+      }
+    },
+    {
+      "date": "2026-04-30",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.79,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.854341,
+        "percentile": 5,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -20
+      }
+    },
+    {
+      "date": "2026-05-02",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.639,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.855651,
+        "percentile": 16,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -98
+      }
+    },
+    {
+      "date": "2026-05-02",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "fast",
+      "strength": 0.783,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.201741,
+        "percentile": 37,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -68
+      }
+    },
+    {
+      "date": "2026-05-07",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.616,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.162196,
+        "percentile": 68,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 8
+      }
+    },
+    {
+      "date": "2026-05-07",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.634,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.006259,
+        "percentile": 42,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -11
+      }
+    },
+    {
+      "date": "2026-05-08",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.669,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 8.01985,
+        "percentile": 74,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 79
+      }
+    },
+    {
+      "date": "2026-05-09",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.778,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.853586,
+        "percentile": 5,
+        "window_days": 20,
+        "streak_days": 3,
+        "change_bp": -24
+      }
+    },
+    {
+      "date": "2026-05-10",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.639,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.160325,
+        "percentile": 11,
+        "window_days": 20,
+        "streak_days": 4,
+        "change_bp": -107
+      }
+    },
+    {
+      "date": "2026-05-10",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.695,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.006119,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 4,
+        "change_bp": -235
+      }
+    },
+    {
+      "date": "2026-05-10",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.837,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.20134,
+        "percentile": 21,
+        "window_days": 20,
+        "streak_days": 4,
+        "change_bp": -20
+      }
+    },
+    {
+      "date": "2026-05-10",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.912,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 7.93162,
+        "percentile": 16,
+        "window_days": 20,
+        "streak_days": 3,
+        "change_bp": -32
+      }
+    },
+    {
+      "date": "2026-05-14",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.616,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.15997,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 5,
+        "change_bp": -66
+      }
+    },
+    {
+      "date": "2026-05-14",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.624,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 7.8855,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 4,
+        "change_bp": -94
+      }
+    },
+    {
+      "date": "2026-05-14",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.93,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 7.8855,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 4,
+        "change_bp": -94
+      }
+    },
+    {
+      "date": "2026-05-14",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.925,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.006075,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 5,
+        "change_bp": -137
+      }
+    },
+    {
+      "date": "2026-05-15",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.688,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.006075,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 6,
+        "change_bp": -72
+      }
+    },
+    {
+      "date": "2026-05-15",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.74,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.198958,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 6,
+        "change_bp": -118
+      }
+    },
+    {
+      "date": "2026-05-16",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "fast",
+      "strength": 0.913,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.836346,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 7,
+        "change_bp": -159
+      }
+    },
+    {
+      "date": "2026-05-17",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.682,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.154264,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 8,
+        "change_bp": -378
+      }
+    },
+    {
+      "date": "2026-05-17",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.916,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.154264,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 8,
+        "change_bp": -378
+      }
+    },
+    {
+      "date": "2026-05-17",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.968,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 7.82531,
+        "percentile": 5,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -134
+      }
+    },
+    {
+      "date": "2026-05-17",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.931,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.006101,
+        "percentile": 11,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -30
+      }
+    },
+    {
+      "date": "2026-05-20",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.905,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.196581,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -119
+      }
+    },
+    {
+      "date": "2026-05-20",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.96,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.827326,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 9,
+        "change_bp": -135
+      }
+    },
+    {
+      "date": "2026-05-20",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.94,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.15388,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 9,
+        "change_bp": -267
+      }
+    },
+    {
+      "date": "2026-05-21",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.617,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.815238,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 10,
+        "change_bp": -252
+      }
+    },
+    {
+      "date": "2026-05-21",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.668,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.152471,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 10,
+        "change_bp": -251
+      }
+    },
+    {
+      "date": "2026-05-21",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.644,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 7.6422,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -228
+      }
+    },
+    {
+      "date": "2026-05-21",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.68,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.005914,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 3,
+        "change_bp": -317
+      }
+    },
+    {
+      "date": "2026-05-21",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "fast",
+      "strength": 0.941,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 7.6422,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -228
+      }
+    },
+    {
+      "date": "2026-05-21",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.968,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.005914,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 3,
+        "change_bp": -317
+      }
+    },
+    {
+      "date": "2026-05-22",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.64,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.192869,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 3,
+        "change_bp": -288
+      }
+    },
+    {
+      "date": "2026-05-23",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.943,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.192438,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 4,
+        "change_bp": -310
+      }
+    },
+    {
+      "date": "2026-05-23",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.884,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.809493,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 12,
+        "change_bp": -320
+      }
+    },
+    {
+      "date": "2026-05-24",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.923,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.151043,
+        "percentile": 11,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -209
+      }
+    },
+    {
+      "date": "2026-05-24",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.945,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 7.67396,
+        "percentile": 16,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -193
+      }
+    },
+    {
+      "date": "2026-05-24",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.716,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.005944,
+        "percentile": 16,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -257
+      }
+    },
+    {
+      "date": "2026-05-27",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.89,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.194413,
+        "percentile": 32,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": 80
+      }
+    },
+    {
+      "date": "2026-05-28",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.654,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.151685,
+        "percentile": 26,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 109
+      }
+    },
+    {
+      "date": "2026-05-28",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.819,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.819531,
+        "percentile": 37,
+        "window_days": 20,
+        "streak_days": 3,
+        "change_bp": 124
+      }
+    },
+    {
+      "date": "2026-05-28",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.796,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.151685,
+        "percentile": 26,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 109
+      }
+    },
+    {
+      "date": "2026-05-28",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "fast",
+      "strength": 0.959,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 7.74622,
+        "percentile": 42,
+        "window_days": 20,
+        "streak_days": 4,
+        "change_bp": 164
+      }
+    },
+    {
+      "date": "2026-05-28",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.816,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.005971,
+        "percentile": 37,
+        "window_days": 20,
+        "streak_days": 4,
+        "change_bp": 140
+      }
+    },
+    {
+      "date": "2026-05-29",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.636,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.005907,
+        "percentile": 11,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -62
+      }
+    },
+    {
+      "date": "2026-05-30",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.904,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.193918,
+        "percentile": 37,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 21
+      }
+    },
+    {
+      "date": "2026-05-31",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.631,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.146272,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -316
+      }
+    },
+    {
+      "date": "2026-05-31",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "fast",
+      "strength": 0.88,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.812149,
+        "percentile": 16,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -26
+      }
+    },
+    {
+      "date": "2026-05-31",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.941,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.146272,
+        "percentile": 0,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -316
+      }
+    },
+    {
+      "date": "2026-05-31",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.921,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 7.67536,
+        "percentile": 37,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 2
+      }
+    },
+    {
+      "date": "2026-05-31",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.887,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.005918,
+        "percentile": 21,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -45
+      }
+    },
+    {
+      "date": "2026-06-04",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.751,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.148396,
+        "percentile": 21,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -72
+      }
+    },
+    {
+      "date": "2026-06-07",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.637,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.199351,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 334
+      }
+    },
+    {
+      "date": "2026-06-07",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.623,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.840125,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 344
+      }
+    },
+    {
+      "date": "2026-06-07",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.653,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.151376,
+        "percentile": 68,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 349
+      }
+    },
+    {
+      "date": "2026-06-07",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.668,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 7.91682,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 315
+      }
+    },
+    {
+      "date": "2026-06-10",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.645,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.198802,
+        "percentile": 74,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -11
+      }
+    },
+    {
+      "date": "2026-06-10",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.618,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.837789,
+        "percentile": 74,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -11
+      }
+    },
+    {
+      "date": "2026-06-10",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.68,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 7.83535,
+        "percentile": 68,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -96
+      }
+    },
+    {
+      "date": "2026-06-11",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.676,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.147968,
+        "percentile": 21,
+        "window_days": 20,
+        "streak_days": 3,
+        "change_bp": -255
+      }
+    },
+    {
+      "date": "2026-06-11",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.685,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.00596,
+        "percentile": 47,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -376
+      }
+    },
+    {
+      "date": "2026-06-11",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.78,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 7.66882,
+        "percentile": 11,
+        "window_days": 20,
+        "streak_days": 3,
+        "change_bp": -421
+      }
+    },
+    {
+      "date": "2026-06-12",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "closing",
+      "speed": "fast",
+      "strength": 0.807,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.146446,
+        "percentile": 16,
+        "window_days": 20,
+        "streak_days": 4,
+        "change_bp": -326
+      }
+    },
+    {
+      "date": "2026-06-18",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.658,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 7.7587,
+        "percentile": 58,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 60
+      }
+    },
+    {
+      "date": "2026-06-18",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.671,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.006005,
+        "percentile": 58,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 34
+      }
+    },
+    {
+      "date": "2026-07-03",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.634,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.212648,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 158
+      }
+    },
+    {
+      "date": "2026-07-03",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.704,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 8.43411,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 143
+      }
+    },
+    {
+      "date": "2026-07-04",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.651,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.162603,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 242
+      }
+    },
+    {
+      "date": "2026-07-04",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.723,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.006543,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 197
+      }
+    },
+    {
+      "date": "2026-07-09",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.674,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.161273,
+        "percentile": 68,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -82
+      }
+    },
+    {
+      "date": "2026-07-16",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.721,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.162418,
+        "percentile": 47,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 10
+      }
+    },
+    {
+      "date": "2026-07-19",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.628,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.165979,
+        "percentile": 89,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 119
+      }
+    },
+    {
+      "date": "2026-07-22",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.615,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.895551,
+        "percentile": 79,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 46
+      }
+    },
+    {
+      "date": "2026-07-24",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.627,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.213894,
+        "percentile": 89,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 9
+      }
+    },
+    {
+      "date": "2026-07-24",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.649,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 8.48238,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 8
+      }
+    },
+    {
+      "date": "2026-07-24",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.635,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.006513,
+        "percentile": 74,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -5
+      }
+    },
+    {
+      "date": "2026-07-25",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.613,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.896568,
+        "percentile": 89,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": 1
+      }
+    },
+    {
+      "date": "2026-07-26",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.678,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.167542,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 94
+      }
+    },
+    {
+      "date": "2026-07-29",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.642,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.212743,
+        "percentile": 42,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -54
+      }
+    },
+    {
+      "date": "2026-07-29",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.641,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.892135,
+        "percentile": 42,
+        "window_days": 20,
+        "streak_days": 4,
+        "change_bp": -58
+      }
+    },
+    {
+      "date": "2026-07-29",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.662,
+      "scenario_code": "LEVEL_LOW",
+      "facts": {
+        "rate": 0.163878,
+        "percentile": 16,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": -194
+      }
+    },
+    {
+      "date": "2026-08-02",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.673,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.216995,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 174
+      }
+    },
+    {
+      "date": "2026-08-02",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.67,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 8.59216,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 201
+      }
+    },
+    {
+      "date": "2026-08-02",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.706,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.006644,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 234
+      }
+    },
+    {
+      "date": "2026-08-07",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.618,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.925435,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 184
+      }
+    },
+    {
+      "date": "2026-08-07",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.672,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 8.76114,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 197
+      }
+    },
+    {
+      "date": "2026-08-13",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.66,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.225023,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 124
+      }
+    },
+    {
+      "date": "2026-08-13",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.673,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 8.90205,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 112
+      }
+    },
+    {
+      "date": "2026-08-13",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.679,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.006902,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 103
+      }
+    },
+    {
+      "date": "2026-08-16",
+      "corridor": "RUB_UZS",
+      "indicator": "reversal_up",
+      "direction": "closing",
+      "speed": "slow",
+      "strength": 0.55,
+      "scenario_code": "REVERSAL_UP",
+      "facts": {
+        "rate": 0.007082,
+        "percentile": 100,
+        "window_days": 30,
+        "streak_days": 3,
+        "change_bp": 261
+      },
+      "seed": true
+    },
+    {
+      "date": "2026-08-21",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.634,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 9.19611,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 75
+      }
+    },
+    {
+      "date": "2026-08-22",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.703,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.180336,
+        "percentile": 68,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -77
+      }
+    },
+    {
+      "date": "2026-08-22",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.65,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.007067,
+        "percentile": 68,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": -21
+      }
+    },
+    {
+      "date": "2026-08-28",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.669,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.231188,
+        "percentile": 79,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 181
+      }
+    },
+    {
+      "date": "2026-08-28",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.703,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.183829,
+        "percentile": 84,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 159
+      }
+    },
+    {
+      "date": "2026-08-28",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.664,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.007156,
+        "percentile": 84,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 223
+      }
+    },
+    {
+      "date": "2026-08-30",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.655,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 9.25493,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 317
+      }
+    },
+    {
+      "date": "2026-09-05",
+      "corridor": "RUB_AMD",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.695,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.238577,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 154
+      }
+    },
+    {
+      "date": "2026-09-05",
+      "corridor": "RUB_TJS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.666,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 9.39067,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 147
+      }
+    },
+    {
+      "date": "2026-09-05",
+      "corridor": "RUB_UZS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.707,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.007355,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 140
+      }
+    },
+    {
+      "date": "2026-09-06",
+      "corridor": "RUB_KGS",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.639,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.990127,
+        "percentile": 84,
+        "window_days": 20,
+        "streak_days": 2,
+        "change_bp": 115
+      }
+    },
+    {
+      "date": "2026-09-06",
+      "corridor": "RUB_KZT",
+      "indicator": "hist_gradient_boosting",
+      "direction": "favorable",
+      "speed": "fast",
+      "strength": 0.679,
+      "scenario_code": "ML_MOMENT",
+      "facts": {
+        "rate": 0.189939,
+        "percentile": 95,
+        "window_days": 20,
+        "streak_days": 1,
+        "change_bp": 258
+      }
+    }
+  ]
+}
