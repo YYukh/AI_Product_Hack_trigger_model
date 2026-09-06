@@ -1,104 +1,92 @@
-# AI Product Hack — Trigger Model
+# FX Signal Pipeline
 
-Командный репозиторий триггерной модели для трансграничных переводов.
+Пайплайн для выбора выгодного момента перевода рублей в `AMD`, `KGS`, `KZT`,
+`TJS` и `UZS`. Он объединяет интерпретируемые индикаторные правила и ML,
+формирует ограниченный поток сигналов и проверяет актуальность сигнала по цене
+MOEX перед его использованием.
 
-В репозитории реализован воспроизводимый исследовательский pipeline: загрузка официальных дневных курсов Банка России, causal-признаки, разметка targets, walk-forward оптимизация rule-based индикаторов, независимый backtest фиксированных G0/W1-правил и ML-индикатор на непрерывных составляющих лучших правил. Отдельный stateful signal pipeline день за днём обновляет просроченные rule/ML-артефакты, формирует единый JSON-вектор, пропускает его через сменяемую метамодель и считает итоговый backtest общего потока.
+## Что делает проект
 
-Требуется Python 3.10 или новее.
-
-## Быстрый старт
-
-```bash
-git clone https://github.com/YYukh/AI_Product_Hack_trigger_model.git
-cd AI_Product_Hack_trigger_model
-
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-
-jupyter lab
+```text
+Данные ЦБ РФ и рыночный контекст
+              ↓
+causal-признаки и targets G0/W1
+              ↓
+rule-сигналы + ML-модели
+              ↓
+walk-forward OOS predictions
+              ↓
+evidence aggregation и selector
+              ↓
+cooldown + не более 2 сигналов за 7 дней
+              ↓
+holdout-оценка и проверка актуальности на MOEX
 ```
 
-На Windows активация окружения выполняется командой:
+- `G0 / GOOD_NOW` — курс выгоден сейчас;
+- `W1 / WINDOW_CLOSING` — выгодное окно может скоро закрыться;
+- горизонты прогнозирования: `1`, `3`, `5`, `10` и `20` дней.
 
-```powershell
-.venv\Scripts\activate
-```
-
-`notebooks/test.ipynb` содержит исследование и подбор конфигураций. `notebooks/02_signal_pipeline.ipynb` является самостоятельным production-shaped pipeline: он сам загружает данные, строит признаки, воспроизводит raw OOS-поток движков с 2022 года, обучает логистическую метамодель на 2022–2023, валидирует её на 2024 и считает финальный backtest с 2025 года. Второй notebook не зависит от переменных или файлов, созданных первым. Запускайте Jupyter из корня репозитория, его родительской папки либо из каталога `notebooks`.
-
-## Что делает загрузчик
-
-- загружает XML-историю с официального сайта ЦБ РФ;
-- поддерживает `AMD`, `KZT`, `KGS`, `TJS`, `UZS`, `USD`, `EUR`, `CNY`;
-- сохраняет исходный номинал и исходное значение курса;
-- нормализует значение до рублей за одну единицу валюты;
-- возвращает temporal-таблицу и широкий DataFrame `дата × валюта`;
-- при необходимости сохраняет исходные XML локально.
-
-Исторический XML не содержит точного времени публикации. Поэтому `available_at` и `publication_timestamp` консервативно установлены на `00:00` следующего календарного дня, а поле `publication_timestamp_is_proxy=True` явно маркирует это допущение.
-
-## Что делает исследовательский pipeline
-
-- строит point-in-time календарную панель без использования будущих значений в признаках;
-- рассчитывает causal-индикаторы и future outcomes для разметки;
-- формирует семейства targets и оценивает их частоту и теоретический lift;
-- перебирает одиночные правила и пары правил с `AND`/`OR`;
-- подбирает параметры на train-части walk-forward и оценивает pooled OOS lift;
-- требует не менее двух сигналов в неделю;
-- выбирает лучшие rule-архитектуры на discovery и продолжает их OOS walk-forward с переоптимизацией thresholds перед каждым test-периодом;
-- выбирает частоту переобучения ML на discovery и продолжает OOS walk-forward победителя;
-- для rules и ML использует rolling train-окно последних 24 месяцев вместо expanding train.
-
-## Единый сигнал и метамодель
-
-- в коде зафиксированы победившие rule-архитектуры, parameter grids и cadence; конкретные thresholds переобучаются на прошлом перед каждым OOS-периодом;
-- HistGradientBoosting переобучается на фиксированном cadence 12 месяцев;
-- для каждого rule/ML-движка хранится состояние: fitted artifact, версия, дата обучения, последняя зрелая дата train и следующая дата переобучения;
-- `get_signal` отдаёт JSON-совместимый score каждого движка, включая несработавшие и технические статусы;
-- `filter_signal` является стабильной границей сменяемой метамодели, а `run_signal_day` — единственной дневной точкой входа для production и исторического replay;
-- время `as_of` фиксируется как 09:00 `Europe/Moscow`;
-- rule confidence пересчитывается как precision правила только по уже созревшим прошлым targets, ML confidence — precision на прошлом validation-окне;
-- исходный ML probability хранится отдельно как `raw_score`;
-- простой confidence filter реализован отдельно и может быть заменён другой функцией без изменения upstream-кода и backtest;
-- финальный JSON не содержит будущего значения target;
-- разные горизонты сохраняются как отдельные события.
+Rule confidence рассчитывается только по уже созревшим OOS-наблюдениям. Для ML
+используется temporally calibrated `predict_proba`. Обучение и валидация идут
+строго по времени; параметры selector и policy замораживаются до финального
+holdout.
 
 ## Структура
 
 ```text
-notebooks/test.ipynb             # основной исследовательский notebook
-notebooks/02_signal_pipeline.ipynb # общий поток, meta-model и финальный backtest
-src/cbr_loader.py                # загрузка и нормализация курсов ЦБ
-src/market_data.py               # point-in-time market panel
-src/features.py                  # causal-признаки
-src/outcomes.py                  # будущие outcomes для разметки
-src/targets.py                   # targets и их registry
-src/target_evaluation.py         # частота и теоретический lift targets
-src/indicators.py                # правила и комбинации AND/OR
-src/walk_forward.py              # временные WF-разбиения
-src/indicator_optimization.py    # train-оптимизация и pooled OOS-оценка
-src/indicator_backtest.py        # независимый backtest фиксированных правил
-src/ml_backtest.py               # WF-выбор cadence и backtest ML-индикатора
-src/production_config.py         # frozen rules и ML production config
-src/production_pipeline.py       # состояния, retraining, get_signal и replay
-src/signal_contract.py           # единый evidence contract и adapters
-src/meta_model.py                # сменяемая метамодель и JSON event contract
-src/signal_backtest.py           # pooled backtest финального потока
-tests/                           # автоматические проверки
-data/raw/cbr/                    # локальный XML-кэш, не коммитится
-data/processed/                  # локальные CSV/Parquet, не коммитятся
+notebooks/model_pipeline.ipynb  # основной воспроизводимый ноутбук
+src/                            # данные, признаки, модели, selector и policy
+tests/                          # автоматические тесты
+figures/                        # итоговые графики проекта
+data/                           # локальный кэш данных, не коммитится
+product/                        # продуктовые исследования и материалы
 ```
 
-## Проверка
+Основная программная точка входа:
+
+```python
+from src.pipeline import run_yura_pipeline
+```
+
+Архитектуру базового ML и тип selector можно менять независимо:
+
+```python
+from src.config import YuraPipelineConfig
+from src.selector import build_opportunity_selector
+
+config = YuraPipelineConfig(ml_scope="pooled")
+selector = build_opportunity_selector("threshold")
+```
+
+Допустимые `ml_scope`: `pooled`, `hybrid`, `per_currency`.
+
+Допустимые selector: `threshold`, `logistic_regression`, `extra_trees`.
+
+## Запуск
+
+Требуется Python 3.10 или новее.
 
 ```bash
-python -m unittest discover -s tests
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+jupyter lab notebooks/model_pipeline.ipynb
 ```
 
-Перед командной работой создавайте отдельную ветку:
+При первом запуске данные загружаются и кэшируются в `data/raw` и
+`data/processed`.
+
+## Тесты
 
 ```bash
-git switch -c feature/short-description
+python -m pytest -q
 ```
+
+## Важные ограничения
+
+- курс ЦБ — ориентир, а не гарантированный курс исполнения;
+- исторический lift и BPS uplift не гарантируют будущий результат;
+- клиентская симуляция оценивает продуктовый эффект, но не участвует в обучении
+  и формировании сигналов.

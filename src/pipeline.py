@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import brier_score_loss, roc_auc_score
 
-from src.signal_backtest import backtest_signal_stream, build_evaluation_universe
+from .signal_backtest import backtest_signal_stream, build_evaluation_universe
 
 from .config import YuraPipelineConfig
 from .engine_registry import EngineRegistry, default_engine_registry

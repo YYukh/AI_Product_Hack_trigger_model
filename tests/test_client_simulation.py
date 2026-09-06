@@ -1,6 +1,6 @@
 import pandas as pd
 
-from research.yura.src.client_simulation import (
+from src.client_simulation import (
     ClientSimulationConfig,
     allocate_clients_by_timezone,
     build_client_delivery_schedule,
