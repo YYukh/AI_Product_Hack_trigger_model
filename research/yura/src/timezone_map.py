@@ -192,14 +192,16 @@ def build_subject_savings_table(
     currency: str = "ALL",
     geojson: dict[str, Any] | None = None,
 ) -> pd.DataFrame:
-    """Join mean realized client saving (%) to every Russian subject.
+    """Join expected client saving (%) to every Russian subject.
 
-    ``currency='ALL'`` pools currencies using the number of expected executed
-    client transactions. BPS are converted to percent with 100 BPS = 1%.
+    The denominator contains all potential transfer volume, including signals
+    rejected after delayed delivery. A rejected opportunity therefore has zero
+    saving instead of disappearing from a conditional mean. ``currency='ALL'``
+    pools currencies through the same monetary numerator and denominator.
     """
     required = {
-        "timezone", "currency", "mean_realized_benefit_bps",
-        "expected_client_transactions",
+        "timezone", "currency", "net_client_savings_rub",
+        "potential_transfer_volume_rub",
     }
     missing = required.difference(simulation_summary.columns)
     if missing:
@@ -215,21 +217,17 @@ def build_subject_savings_table(
 
     rows: list[dict] = []
     for timezone, sample in selected.groupby("timezone", sort=False):
-        weights = pd.to_numeric(
-            sample["expected_client_transactions"], errors="coerce"
-        ).fillna(0.0)
-        values = pd.to_numeric(
-            sample["mean_realized_benefit_bps"], errors="coerce"
-        )
-        valid = values.notna() & weights.gt(0)
-        mean_bps = (
-            float(np.average(values.loc[valid], weights=weights.loc[valid]))
-            if valid.any() else np.nan
-        )
+        savings = float(pd.to_numeric(
+            sample["net_client_savings_rub"], errors="coerce"
+        ).sum())
+        potential_volume = float(pd.to_numeric(
+            sample["potential_transfer_volume_rub"], errors="coerce"
+        ).sum())
         rows.append({
             "timezone": timezone,
             "mean_client_savings_pct": (
-                mean_bps / 100.0 if pd.notna(mean_bps) else np.nan
+                100.0 * savings / potential_volume
+                if potential_volume > 0 else np.nan
             ),
         })
     savings_by_zone = pd.DataFrame(rows).set_index("timezone")[
@@ -261,16 +259,20 @@ def build_subject_savings_table(
 
 
 def _focus_on_russia(figure: go.Figure) -> None:
-    """Set a fixed Russia-centred viewport instead of a world overview."""
+    """Use a tight viewport centred on mainland Russia.
+
+    Automatic ``fitbounds='locations'`` is deliberately avoided: the detached
+    Kaliningrad geometry makes Plotly reserve almost the whole Eurasian width
+    and visually shrinks the main territory.
+    """
     figure.update_geos(
         visible=False,
         bgcolor="#ffffff",
         projection_type="natural earth",
         projection_rotation_lon=100,
-        projection_scale=2.15,
-        center_lat=63,
-        center_lon=100,
-        lataxis_range=[40, 82],
+        projection_scale=2.65,
+        center_lat=64,
+        center_lon=104,
     )
 
 
@@ -344,8 +346,8 @@ def plot_russian_timezone_lift_map(
             "text": f"Lift клиентских сигналов по субъектам РФ — {currency}",
             "x": 0.5,
         },
-        height=720,
-        margin={"l": 0, "r": 0, "t": 70, "b": 0},
+        height=540,
+        margin={"l": 0, "r": 0, "t": 65, "b": 0},
         paper_bgcolor="#ffffff",
         font={"color": "#111111"},
     )
@@ -359,7 +361,7 @@ def plot_russian_timezone_savings_map(
     geojson: dict[str, Any] | None = None,
     cache_path: str | Path | None = None,
 ) -> go.Figure:
-    """Plot mean realized client saving per accepted transfer in percent."""
+    """Plot saving over all potential client transfer volume in percent."""
     payload = geojson or load_russian_subject_geojson(cache_path)
     table = build_subject_savings_table(
         simulation_summary, currency=currency, geojson=payload
@@ -428,8 +430,8 @@ def plot_russian_timezone_savings_map(
             ),
             "x": 0.5,
         },
-        height=720,
-        margin={"l": 0, "r": 0, "t": 70, "b": 0},
+        height=540,
+        margin={"l": 0, "r": 0, "t": 65, "b": 0},
         paper_bgcolor="#ffffff",
         font={"color": "#111111"},
     )

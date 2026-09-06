@@ -97,15 +97,16 @@ def plot_signal_series(
     if target_family is not None and "target_family" in subset:
         subset = subset.loc[subset["target_family"].eq(target_family)]
     subset["available_at"] = pd.to_datetime(subset["available_at"])
-    for family, color, marker in (
-        ("G0", PALETTE["red"], "o"),
-        ("W1", PALETTE["dark_gray"], "^"),
+    for family, family_label, color, marker in (
+        ("G0", "Выгодно сейчас", PALETTE["red"], "o"),
+        ("W1", "Окно закрывается", PALETTE["dark_gray"], "^"),
     ):
         points = subset.loc[subset.get("target_family", pd.Series(index=subset.index)).eq(family)]
         if not points.empty:
             points = points.merge(frame[["available_at", "rate"]], on="available_at", how="left")
             ax.scatter(points["available_at"], points["rate"], color=color, marker=marker,
-                       s=42, label=family, zorder=3, edgecolors="white", linewidths=0.5)
+                       s=42, label=family_label, zorder=3,
+                       edgecolors="white", linewidths=0.5)
     _style(ax, title or f"{currency}: курс и финальные сигналы")
     ax.set_xlabel("Дата")
     ax.set_ylabel("Курс, RUB")
@@ -383,6 +384,9 @@ def plot_policy_speed_analysis(backtest_rows: pd.DataFrame) -> plt.Figure:
     )
     _style(axes[1, 0], "Состав потока по скорости сигналов")
     axes[1, 0].set_ylabel("Количество сигналов")
+    max_signal_count = float(count_matrix.sum(axis=1).max())
+    axes[1, 0].set_ylim(0, max(1.0, max_signal_count * 1.18))
+    axes[1, 0].set_axisbelow(True)
     _style(axes[1, 1], "Вклад скорости сигналов в суммарный BPS")
     axes[1, 1].set_ylabel("Суммарный benefit, BPS")
     for ax in axes[1]:

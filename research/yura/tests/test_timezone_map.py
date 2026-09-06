@@ -33,8 +33,8 @@ def test_savings_table_converts_bps_to_percent_and_pools_currencies():
     summary = pd.DataFrame({
         "timezone": ["MSK", "MSK"],
         "currency": ["KZT", "AMD"],
-        "mean_realized_benefit_bps": [100.0, 300.0],
-        "expected_client_transactions": [3.0, 1.0],
+        "net_client_savings_rub": [600.0, 600.0],
+        "potential_transfer_volume_rub": [60_000.0, 20_000.0],
     })
     table = build_subject_savings_table(summary, currency="ALL")
     value = table.loc[

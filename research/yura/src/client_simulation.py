@@ -37,6 +37,9 @@ class ClientSimulationConfig:
     quiet_end_hour: int = 9
     max_market_price_age: str = "2h"
     timezone_shares: Mapping[str, float] | None = None
+    currency_shares: Mapping[str, float] | None = None
+    signal_reference_hour_msk: int = 9
+    random_state: int = 42
 
     def __post_init__(self) -> None:
         if self.total_clients <= 0:
@@ -46,7 +49,8 @@ class ClientSimulationConfig:
         if not 0.0 <= self.participation_rate <= 1.0:
             raise ValueError("participation_rate должен лежать в [0, 1]")
         for value in (
-            self.signal_hour_msk, self.quiet_start_hour, self.quiet_end_hour
+            self.signal_hour_msk, self.signal_reference_hour_msk,
+            self.quiet_start_hour, self.quiet_end_hour
         ):
             if not 0 <= value <= 23:
                 raise ValueError("Часы должны лежать в [0, 23]")
@@ -110,6 +114,50 @@ def allocate_clients_by_timezone(
     return zone_rows
 
 
+def allocate_clients_by_corridor(
+    timezone_allocation: pd.DataFrame,
+    currencies: tuple[str, ...] | list[str],
+    shares: Mapping[str, float] | None = None,
+) -> pd.DataFrame:
+    """Split each time-zone population into persistent currency corridors."""
+    currency_values = tuple(sorted({str(value).upper() for value in currencies}))
+    if not currency_values:
+        raise ValueError("Для распределения клиентов нужна хотя бы одна валюта")
+    if shares is None:
+        weights = pd.Series(1.0, index=currency_values)
+    else:
+        unknown = set(shares).difference(currency_values)
+        if unknown:
+            raise ValueError(f"Неизвестные валюты в currency_shares: {sorted(unknown)}")
+        weights = pd.Series(
+            {currency: float(shares.get(currency, 0.0)) for currency in currency_values}
+        )
+    if not np.isfinite(weights).all() or (weights < 0).any() or weights.sum() <= 0:
+        raise ValueError("Доли валют должны быть конечными и неотрицательными")
+    normalized = weights / weights.sum()
+    rows: list[dict] = []
+    for zone in timezone_allocation.itertuples(index=False):
+        exact = normalized * int(zone.client_count)
+        counts = np.floor(exact).astype(int)
+        remainder = int(zone.client_count) - int(counts.sum())
+        if remainder:
+            order = (exact - counts).sort_values(
+                ascending=False, kind="stable"
+            ).index
+            counts.loc[order[:remainder]] += 1
+        for currency in currency_values:
+            rows.append({
+                "timezone": zone.timezone,
+                "iana_timezone": zone.iana_timezone,
+                "utc_offset_from_msk": int(zone.utc_offset_from_msk),
+                "timezone_client_count": int(zone.client_count),
+                "currency": currency,
+                "configured_currency_share": float(normalized.loc[currency]),
+                "client_count": int(counts.loc[currency]),
+            })
+    return pd.DataFrame(rows)
+
+
 def _to_moscow(value: object) -> pd.Timestamp:
     timestamp = pd.Timestamp(value)
     if timestamp.tzinfo is None:
@@ -159,15 +207,30 @@ def build_client_delivery_schedule(
         config.total_clients, config.timezone_shares
     )
     events = signals.copy()
+    events["currency"] = events["currency"].astype(str).str.upper()
     event_dates = pd.to_datetime(events["available_at"]).dt.normalize()
-    events["generated_at"] = event_dates.map(_to_moscow) + pd.Timedelta(
+    events["signal_origin_at"] = event_dates.map(_to_moscow) + pd.Timedelta(
+        hours=config.signal_reference_hour_msk
+    )
+    events["provider_check_at"] = event_dates.map(_to_moscow) + pd.Timedelta(
         hours=config.signal_hour_msk
     )
-    events["_cross_key"] = 1
-    zones = allocation.copy()
-    zones["_cross_key"] = 1
-    schedule = events.merge(zones, on="_cross_key", how="inner").drop(
-        columns="_cross_key"
+    if (events["provider_check_at"] < events["signal_origin_at"]).any():
+        raise ValueError(
+            "signal_hour_msk не может быть раньше signal_reference_hour_msk"
+        )
+    # generated_at remains the actual product-send attempt for compatibility.
+    events["generated_at"] = events["provider_check_at"]
+    corridor_allocation = allocate_clients_by_corridor(
+        allocation,
+        events["currency"].unique().tolist(),
+        config.currency_shares,
+    )
+    schedule = events.merge(
+        corridor_allocation,
+        on="currency",
+        how="inner",
+        validate="many_to_many",
     )
     schedule["delivery_at"] = [
         client_delivery_time(
@@ -184,7 +247,40 @@ def build_client_delivery_schedule(
         pd.to_datetime(schedule["delivery_at"], utc=True)
         - pd.to_datetime(schedule["generated_at"], utc=True)
     ).dt.total_seconds() / 3600.0
-    return schedule, allocation
+    return schedule, corridor_allocation
+
+
+def _assign_half_month_transfers(
+    schedule: pd.DataFrame,
+    *,
+    participation_rate: float,
+    random_state: int,
+) -> pd.DataFrame:
+    """Assign at most one transfer per client in each half of every month."""
+    result = schedule.copy()
+    dates = pd.to_datetime(result["available_at"])
+    result["transfer_month"] = dates.dt.to_period("M").astype(str)
+    result["month_half"] = np.where(dates.dt.day.le(14), 1, 2)
+    result["scheduled_client_transactions"] = 0
+    rng = np.random.default_rng(int(random_state))
+    groups = ["timezone", "currency", "transfer_month", "month_half"]
+    for _, sample in result.groupby(groups, sort=True):
+        client_count = int(sample["client_count"].iloc[0])
+        participating = int(rng.binomial(client_count, participation_rate))
+        if participating <= 0:
+            continue
+        # Every client selects one of the signal opportunities in this half.
+        # Multinomial counts reproduce independent uniform client choices
+        # without materialising one row per client.
+        assignments = rng.multinomial(
+            participating,
+            np.full(len(sample), 1.0 / len(sample)),
+        )
+        result.loc[sample.index, "scheduled_client_transactions"] = assignments
+    result["scheduled_client_transactions"] = result[
+        "scheduled_client_transactions"
+    ].astype(int)
+    return result
 
 
 def _asof_market_price(
@@ -259,7 +355,7 @@ def _weighted_mean(values: pd.Series, weights: pd.Series) -> float:
 
 def _summarize(details: pd.DataFrame, allocation: pd.DataFrame) -> pd.DataFrame:
     rows: list[dict] = []
-    client_map = allocation.set_index("timezone")["client_count"]
+    client_map = allocation.set_index(["timezone", "currency"])["client_count"]
     for (zone, currency), sample in details.groupby(
         ["timezone", "currency"], sort=True
     ):
@@ -273,37 +369,62 @@ def _summarize(details: pd.DataFrame, allocation: pd.DataFrame) -> pd.DataFrame:
         positive_savings = float(
             accepted["positive_client_savings_rub"].sum()
         )
+        potential_transactions = float(
+            sample["potential_client_transactions"].sum()
+        )
+        potential_volume = float(sample["potential_transfer_volume_rub"].sum())
         mean_benefit_bps = _weighted_mean(
             accepted["realized_benefit_bps"], weights
         )
+        corridor_clients = int(client_map.loc[(zone, currency)])
+        sent = sample.loc[sample["provider_is_relevant"]]
         rows.append({
             "timezone": zone,
             "currency": currency,
-            "client_count": int(client_map.loc[zone]),
+            "client_count": corridor_clients,
             "signals_considered": int(len(sample)),
-            "signals_delayed": int(sample["delivery_delay_hours"].gt(0).sum()),
+            "signals_sent": int(sample["provider_is_relevant"].sum()),
+            "signals_delayed": int(
+                (sample["provider_is_relevant"]
+                 & sample["delivery_delay_hours"].gt(0)).sum()
+            ),
             "mean_delivery_delay_hours": float(
-                sample["delivery_delay_hours"].mean()
+                sent["delivery_delay_hours"].mean()
+                if not sent.empty else np.nan
             ),
             "max_delivery_delay_hours": float(
-                sample["delivery_delay_hours"].max()
+                sent["delivery_delay_hours"].max()
+                if not sent.empty else np.nan
             ),
             "signals_accepted": int(len(accepted)),
             "signals_rejected": int(len(sample) - len(accepted)),
+            "rejected_by_provider": int(
+                (~sample["provider_is_relevant"]).sum()
+            ),
+            "rejected_after_delivery": int(
+                (sample["provider_is_relevant"] & ~sample["is_relevant"]).sum()
+            ),
             "rejected_expired": int(
-                sample["relevance_status"].eq("EXPIRED").sum()
+                sample["relevance_status"].astype(str).str.endswith("EXPIRED").sum()
             ),
             "rejected_stale_quote": int(
-                sample["relevance_status"].eq("STALE_QUOTE").sum()
+                sample["relevance_status"].astype(str).str.endswith("STALE_QUOTE").sum()
             ),
             "rejected_no_market_data": int(
-                sample["relevance_status"].eq("NO_MARKET_DATA").sum()
+                sample["relevance_status"].astype(str).str.contains(
+                    "NO_MARKET_DATA|NO_EXECUTABLE_QUOTE|NO_REFERENCE_PRICE",
+                    regex=True,
+                ).sum()
             ),
             "rejected_consumed": int(
-                sample["relevance_status"].eq("OPPORTUNITY_CONSUMED").sum()
+                sample["relevance_status"].astype(str).str.endswith(
+                    "OPPORTUNITY_CONSUMED"
+                ).sum()
             ),
             "signal_acceptance_rate": float(sample["is_relevant"].mean()),
             "expected_client_transactions": float(weights.sum()),
+            "potential_client_transactions": potential_transactions,
+            "potential_transfer_volume_rub": potential_volume,
             "precision": precision,
             "random_precision": random_precision,
             "lift": (
@@ -321,8 +442,15 @@ def _summarize(details: pd.DataFrame, allocation: pd.DataFrame) -> pd.DataFrame:
             "net_client_savings_rub": net_savings,
             "positive_client_savings_rub": positive_savings,
             "net_savings_per_client_rub": (
-                net_savings / int(client_map.loc[zone])
-                if int(client_map.loc[zone]) else np.nan
+                net_savings / corridor_clients
+                if corridor_clients else np.nan
+            ),
+            # Product metric: rejected/expired opportunities remain in the
+            # denominator with zero saving. Unlike conditional mean benefit,
+            # this exposes the actual cost of delayed client delivery.
+            "mean_client_savings_pct": (
+                100.0 * net_savings / potential_volume
+                if potential_volume > 0 else np.nan
             ),
         })
     return pd.DataFrame(rows).sort_values(
@@ -339,76 +467,111 @@ def simulate_client_timezones(
 ) -> ClientSimulationResult:
     """Replay signal delivery and relevance without expanding individual users.
 
-    Each client is assumed to have one transfer of ``average_transfer_rub`` when
-    an accepted signal arrives. ``participation_rate`` can scale that assumption
-    later without changing delivery or relevance logic.
+    Clients belong to one currency corridor and receive at most one randomly
+    assigned transfer opportunity in each half of a month. Later send times are
+    checked first by the provider; sleeping clients are checked again on wake-up.
     """
     enriched = _attach_backtest_outcomes(signals, evaluation_rows)
     schedule, allocation = build_client_delivery_schedule(enriched, config=config)
-    schedule = schedule.reset_index(drop=True)
+    schedule = _assign_half_month_transfers(
+        schedule.reset_index(drop=True),
+        participation_rate=config.participation_rate,
+        random_state=config.random_state,
+    )
     schedule["_schedule_order"] = np.arange(len(schedule))
 
     reference_requests = schedule.copy()
-    reference_requests["reference_at"] = reference_requests["generated_at"]
+    reference_requests["reference_at"] = reference_requests["signal_origin_at"]
     priced = _asof_market_price(
         reference_requests, hourly_moex_prices,
         request_time="reference_at", suffix="reference",
     )
     priced = _asof_market_price(
         priced, hourly_moex_prices,
+        request_time="provider_check_at", suffix="provider",
+    )
+    priced = _asof_market_price(
+        priced, hourly_moex_prices,
         request_time="delivery_at", suffix="delivery",
     )
 
-    decisions: list[dict] = []
+    provider_decisions: list[dict] = []
+    client_decisions: list[dict] = []
     for row in priced.to_dict(orient="records"):
-        expires_at = row["generated_at"] + pd.Timedelta(
+        expires_at = row["signal_origin_at"] + pd.Timedelta(
             days=int(row["horizon"])
         )
-        # The frozen pipeline already approved an immediate delivery. MOEX is
-        # consulted only when the product quiet-hours rule delayed the client.
-        if float(row["delivery_delay_hours"]) <= 0.0:
-            decisions.append({
-                "status": "DIRECT_DELIVERY",
-                "is_relevant": True,
-                "adverse_market_move_bps": 0.0,
-                "remaining_expected_bps": float(row["expected_bps"]),
-            })
-            continue
-        if _to_moscow(row["delivery_at"]) >= _to_moscow(expires_at):
-            decisions.append({
-                "status": "EXPIRED",
-                "is_relevant": False,
-                "adverse_market_move_bps": np.nan,
-                "remaining_expected_bps": np.nan,
-            })
-            continue
-        reference_price = pd.to_numeric(
-            row.get("buy_price_reference"), errors="coerce"
-        )
-        delivery_price = pd.to_numeric(
-            row.get("buy_price_delivery"), errors="coerce"
-        )
-        if (
-            pd.isna(reference_price) or reference_price <= 0
-            or pd.isna(delivery_price) or delivery_price <= 0
-        ):
-            decisions.append({
-                "status": "NO_MARKET_DATA",
-                "is_relevant": False,
-                "adverse_market_move_bps": np.nan,
-                "remaining_expected_bps": np.nan,
-            })
-            continue
         signal = row.copy()
         signal.update({
             "side": "BUY_FOREIGN",
-            "generated_at": row["generated_at"],
-            "issued_at": row["generated_at"],
+            "generated_at": row["signal_origin_at"],
+            "issued_at": row["signal_origin_at"],
             "expires_at": expires_at,
             "market_reference_secid": row.get("secid_reference"),
             "market_reference_price": row.get("buy_price_reference"),
         })
-        current_quote = {
+
+        # At 09:00 the frozen daily pipeline is the issuance decision. Any
+        # later scenario must be revalidated by the provider before sending.
+        if row["provider_check_at"] == row["signal_origin_at"]:
+            provider = {
+                "status": "DIRECT_ISSUE",
+                "is_relevant": True,
+                "adverse_market_move_bps": 0.0,
+                "remaining_expected_bps": float(row["expected_bps"]),
+            }
+        else:
+            provider_quote = {
+                "currency": row["currency"],
+                "secid": row.get("secid_provider"),
+                "quote_at": row.get("quote_at_provider"),
+                "fetched_at": row.get("fetched_at_provider"),
+                "buy_price": row.get("buy_price_provider"),
+                "buy_price_source": row.get("buy_price_source_provider"),
+                "buy_price_is_executable": row.get(
+                    "buy_price_is_executable_provider", False
+                ),
+                "sell_price": row.get("sell_price_provider"),
+                "sell_price_source": row.get("sell_price_source_provider"),
+                "sell_price_is_executable": row.get(
+                    "sell_price_is_executable_provider", False
+                ),
+            }
+            provider = evaluate_signal_relevance(
+                signal,
+                provider_quote,
+                checked_at=row["provider_check_at"],
+                max_quote_age=config.max_market_price_age,
+                require_executable=False,
+            )
+        provider_decisions.append(provider)
+
+        if not provider["is_relevant"]:
+            client_decisions.append({
+                "status": f"NOT_SENT_{provider['status']}",
+                "is_relevant": False,
+                "adverse_market_move_bps": provider[
+                    "adverse_market_move_bps"
+                ],
+                "remaining_expected_bps": provider[
+                    "remaining_expected_bps"
+                ],
+            })
+            continue
+        if float(row["delivery_delay_hours"]) <= 0.0:
+            client_decisions.append({
+                "status": "DIRECT_DELIVERY",
+                "is_relevant": True,
+                "adverse_market_move_bps": provider[
+                    "adverse_market_move_bps"
+                ],
+                "remaining_expected_bps": provider[
+                    "remaining_expected_bps"
+                ],
+            })
+            continue
+
+        delivery_quote = {
             "currency": row["currency"],
             "secid": row.get("secid_delivery"),
             "quote_at": row.get("quote_at_delivery"),
@@ -424,30 +587,53 @@ def simulate_client_timezones(
                 "sell_price_is_executable_delivery", False
             ),
         }
-        decision = evaluate_signal_relevance(
+        client = evaluate_signal_relevance(
             signal,
-            current_quote,
+            delivery_quote,
             checked_at=row["delivery_at"],
             max_quote_age=config.max_market_price_age,
             require_executable=False,
         )
-        decisions.append(decision)
+        client_decisions.append(client)
 
-    priced["relevance_status"] = [item["status"] for item in decisions]
-    priced["is_relevant"] = [item["is_relevant"] for item in decisions]
+    priced["provider_status"] = [
+        item["status"] for item in provider_decisions
+    ]
+    priced["provider_is_relevant"] = [
+        item["is_relevant"] for item in provider_decisions
+    ]
+    priced["provider_adverse_market_move_bps"] = [
+        item["adverse_market_move_bps"] for item in provider_decisions
+    ]
+    priced["provider_remaining_expected_bps"] = [
+        item["remaining_expected_bps"] for item in provider_decisions
+    ]
+    priced["relevance_status"] = [
+        item["status"] for item in client_decisions
+    ]
+    priced["is_relevant"] = [
+        item["is_relevant"] for item in client_decisions
+    ]
     priced["adverse_market_move_bps"] = [
-        item["adverse_market_move_bps"] for item in decisions
+        item["adverse_market_move_bps"] for item in client_decisions
     ]
     priced["remaining_expected_bps"] = [
-        item["remaining_expected_bps"] for item in decisions
+        item["remaining_expected_bps"] for item in client_decisions
     ]
     priced["realized_benefit_bps"] = (
         pd.to_numeric(priced["benefit_bps"], errors="coerce")
         - pd.to_numeric(priced["adverse_market_move_bps"], errors="coerce")
     )
     priced["expected_client_transactions"] = (
-        priced["client_count"] * config.participation_rate
+        priced["scheduled_client_transactions"]
         * priced["is_relevant"].astype(float)
+    )
+    priced["potential_client_transactions"] = priced[
+        "scheduled_client_transactions"
+    ].astype(float)
+    priced["potential_transfer_volume_rub"] = (
+        priced["potential_client_transactions"]
+        * config.average_transfer_rub
     )
     priced["net_client_savings_rub"] = (
         priced["expected_client_transactions"]
@@ -486,6 +672,7 @@ def aggregate_client_summary(
     required = {
         "client_count", "signals_considered", "signals_delayed",
         "signals_accepted", "signals_rejected", "expected_client_transactions",
+        "potential_client_transactions", "potential_transfer_volume_rub",
         "precision", "random_precision", "mean_realized_benefit_bps",
         "positive_benefit_rate", "net_client_savings_rub",
         "positive_client_savings_rub",
@@ -495,10 +682,12 @@ def aggregate_client_summary(
         raise ValueError(f"В summary отсутствуют поля: {sorted(missing)}")
 
     additive = [
-        "signals_considered", "signals_delayed", "signals_accepted",
+        "signals_considered", "signals_sent", "signals_delayed", "signals_accepted",
         "signals_rejected", "rejected_expired", "rejected_stale_quote",
         "rejected_no_market_data", "rejected_consumed",
-        "expected_client_transactions", "net_client_savings_rub",
+        "rejected_by_provider", "rejected_after_delivery",
+        "expected_client_transactions", "potential_client_transactions",
+        "potential_transfer_volume_rub", "net_client_savings_rub",
         "positive_client_savings_rub",
     ]
     rows: list[dict] = []
@@ -509,7 +698,14 @@ def aggregate_client_summary(
         for column in additive:
             if column in sample:
                 row[column] = float(pd.to_numeric(sample[column], errors="coerce").sum())
-        row["client_count"] = int(sample["client_count"].max())
+        population_keys = [
+            column for column in ("timezone", "currency")
+            if column in sample.columns
+        ]
+        row["client_count"] = int(
+            sample.drop_duplicates(population_keys)["client_count"].sum()
+            if population_keys else sample["client_count"].max()
+        )
         weights = pd.to_numeric(
             sample["expected_client_transactions"], errors="coerce"
         ).fillna(0.0)
@@ -537,6 +733,11 @@ def aggregate_client_summary(
         clients = row["client_count"]
         row["net_savings_per_client_rub"] = (
             row["net_client_savings_rub"] / clients if clients else np.nan
+        )
+        potential_volume = row.get("potential_transfer_volume_rub", 0.0)
+        row["mean_client_savings_pct"] = (
+            100.0 * row["net_client_savings_rub"] / potential_volume
+            if potential_volume > 0 else np.nan
         )
         rows.append(row)
     return pd.DataFrame(rows).sort_values(groups).reset_index(drop=True)
@@ -591,10 +792,12 @@ def simulate_client_signal_hours(
     # per-policy count/money rather than an artificial fourfold total.
     scenario_count = float(len(hours))
     averaged_columns = [
-        "signals_considered", "signals_delayed", "signals_accepted",
+        "signals_considered", "signals_sent", "signals_delayed", "signals_accepted",
         "signals_rejected", "rejected_expired", "rejected_stale_quote",
         "rejected_no_market_data", "rejected_consumed",
-        "expected_client_transactions", "net_client_savings_rub",
+        "rejected_by_provider", "rejected_after_delivery",
+        "expected_client_transactions", "potential_client_transactions",
+        "potential_transfer_volume_rub", "net_client_savings_rub",
         "positive_client_savings_rub", "net_savings_per_client_rub",
     ]
     for column in averaged_columns:

@@ -74,22 +74,60 @@ def plot_validation_frontier(leaderboard: pd.DataFrame):
 
 
 def plot_holdout_horizon_mix(signals: pd.DataFrame):
+    """Plot final signals by currency and fast/middle/slow horizon buckets."""
     _style()
     if signals.empty:
         raise ValueError("Нет holdout-сигналов")
-    table = signals.pivot_table(
-        index="currency", columns="horizon", values="event_id",
-        aggfunc="count", fill_value=0,
+    required = {"currency", "horizon"}
+    if missing := required.difference(signals.columns):
+        raise KeyError(f"В signals нет полей: {sorted(missing)}")
+
+    data = signals.copy()
+    data["horizon"] = pd.to_numeric(data["horizon"], errors="coerce")
+    data["speed"] = np.select(
+        [
+            data["horizon"].isin((1, 3)),
+            data["horizon"].eq(5),
+            data["horizon"].isin((10, 20)),
+        ],
+        ["fast", "middle", "slow"],
+        default="unknown",
     )
-    table = table.reindex(columns=sorted(table.columns))
-    colors = ["#202020", "#555555", "#8b0000", "#d32f2f", "#ef9a9a"][:len(table.columns)]
-    ax = table.plot(kind="bar", stacked=True, figsize=(10, 6), color=colors)
+    if data["speed"].eq("unknown").any():
+        unexpected = sorted(data.loc[data["speed"].eq("unknown"), "horizon"].unique())
+        raise ValueError(f"Неизвестные горизонты в signals: {unexpected}")
+
+    speed_order = ["fast", "middle", "slow"]
+    labels = {
+        "fast": "Быстрые: 1–3 дня",
+        "middle": "Средние: 5 дней",
+        "slow": "Медленные: 10–20 дней",
+    }
+    colors = {"fast": RED, "middle": "#929292", "slow": BLACK}
+    table = (
+        data.groupby(["currency", "speed"], observed=True)
+        .size()
+        .unstack(fill_value=0)
+        .reindex(columns=speed_order, fill_value=0)
+    )
+    table = table.rename(columns=labels)
+    ax = table.plot(
+        kind="bar", stacked=True, figsize=(12, 6.5),
+        color=[colors[speed] for speed in speed_order], width=0.5,
+    )
     ax.set(
-        title="Holdout: состав конечного потока по горизонтам",
         xlabel="Валюта", ylabel="Число сигналов",
     )
-    ax.legend(title="Горизонт", frameon=False, ncol=len(table.columns))
+    ax.set_title(
+        "Состав потока по скорости сигналов",
+        loc="left", fontweight="bold",
+    )
+    max_total = float(table.sum(axis=1).max())
+    ax.set_ylim(0, max(1.0, max_total * 1.18))
+    ax.legend(frameon=False, loc="upper right")
     ax.grid(axis="y", color=LIGHT_GRAY, linewidth=0.8)
+    ax.set_axisbelow(True)
+    ax.spines[["top", "right"]].set_visible(False)
     plt.xticks(rotation=0)
     ax.figure.tight_layout()
     return ax.figure
